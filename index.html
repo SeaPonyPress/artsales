@@ -693,6 +693,14 @@ function recalc() {
 }
 
 async function submitToNationBuilder(firstName, email) {
+  // Save to local admin portal
+  try {
+    const STORAGE_KEY = 'spp_signups';
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    existing.unshift({ date: new Date().toISOString(), name: firstName, email: email });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  } catch(e) {}
+  // Also attempt NationBuilder post
   try {
     const formData = new FormData();
     formData.append('signup[first_name]', firstName);

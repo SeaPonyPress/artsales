@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPP Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2ec;
+    --cream: #ede9e0;
+    --moss: #2d4a2a;
+    --moss-light: #3d6438;
+    --fog: #7a8c76;
+    --warm-white: #faf8f4;
+    --rust: #8b3a1e;
+    --success: #2d6e3e;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .login-card {
+    background: var(--warm-white);
+    border: 1px solid rgba(45,74,42,0.2);
+    border-radius: 8px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+  }
+
+  .login-card h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.2rem;
+    color: var(--moss);
+    margin-bottom: 0.4rem;
+  }
+
+  .login-card p {
+    font-size: 0.82rem;
+    color: var(--fog);
+    margin-bottom: 1.5rem;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--fog);
+    margin-bottom: 0.3rem;
+    text-align: left;
+  }
+
+  input[type="password"], input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(45,74,42,0.22);
+    border-radius: 4px;
+    background: white;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 1rem;
+    transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--moss); }
+
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    background: var(--moss);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--moss-light); }
+  .btn.secondary {
+    background: var(--cream);
+    color: var(--moss);
+    border: 1px solid rgba(45,74,42,0.2);
+  }
+  .btn.secondary:hover { background: var(--paper); }
+  .btn.danger { background: var(--rust); }
+
+  .error-msg {
+    font-size: 0.82rem;
+    color: var(--rust);
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  /* ADMIN DASHBOARD */
+  .admin-wrap { display: none; }
+
+  .admin-header {
+    background: var(--moss);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1rem;
+    color: white;
+    font-style: italic;
+  }
+
+  .admin-header .logout {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    background: none;
+    border: none;
+    text-decoration: underline;
+  }
+
+  .admin-main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 4rem;
+  }
+
+  .controls {
+    background: var(--warm-white);
+    border: 1px solid rgba(45,74,42,0.15);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .control-group input { margin-bottom: 0; }
+
+  .stats-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--warm-white);
+    border: 1px solid rgba(45,74,42,0.15);
+    border-radius: 6px;
+    padding: 0.9rem 1.25rem;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .stat-card .stat-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.6rem;
+    color: var(--moss);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.72rem;
+    color: var(--fog);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .table-wrap {
+    background: var(--warm-white);
+    border: 1px solid rgba(45,74,42,0.15);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  thead {
+    background: var(--moss);
+    color: white;
+  }
+
+  thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  thead th:hover { background: var(--moss-light); }
+  thead th .sort-arrow { margin-left: 4px; opacity: 0.6; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(45,74,42,0.08);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(45,74,42,0.04); }
+
+  tbody td {
+    padding: 0.7rem 1rem;
+    color: var(--ink);
+  }
+
+  .date-cell { color: var(--fog); font-size: 0.82rem; }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--fog);
+  }
+
+  .empty-state p { font-size: 0.9rem; margin-top: 0.5rem; }
+
+  .export-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 500px) {
+    .controls { flex-direction: column; }
+    .stats-bar { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <h1>Sea Pony Press</h1>
+    <p>Admin portal — authorized access only</p>
+    <label class="field-label" for="pw">Password</label>
+    <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()" style="width:100%">Sign in</button>
+    <div class="error-msg" id="login-error">Incorrect password</div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="admin-header">
+    <h1>Sea Pony Press — Newsletter Signups</h1>
+    <button class="logout" onclick="doLogout()">Sign out</button>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">Total signups</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-filtered">0</div>
+        <div class="stat-label">Showing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-recent">0</div>
+        <div class="stat-label">This month</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label class="field-label">From date</label>
+        <input type="date" id="filter-from">
+      </div>
+      <div class="control-group">
+        <label class="field-label">To date</label>
+        <input type="date" id="filter-to">
+      </div>
+      <div class="control-group">
+        <label class="field-label">Search name or email</label>
+        <input type="text" id="filter-search" placeholder="Search..." oninput="renderTable()">
+      </div>
+      <button class="btn secondary" onclick="clearFilters()">Clear filters</button>
+      <button class="btn" onclick="applyFilters()">Apply</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('date')">Date <span class="sort-arrow" id="sort-date">↓</span></th>
+            <th onclick="sortBy('name')">Name <span class="sort-arrow" id="sort-name"></span></th>
+            <th onclick="sortBy('email')">Email <span class="sort-arrow" id="sort-email"></span></th>
+          </tr>
+        </thead>
+        <tbody id="signup-tbody"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" style="display:none">
+        <strong>No signups found</strong>
+        <p>Adjust your filters or check back after purchases are made.</p>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="export-row">
+      <button class="btn secondary" onclick="exportCSV()">Export as CSV / Excel</button>
+      <button class="btn secondary" onclick="exportPDF()">Export as PDF</button>
+      <button class="btn danger" onclick="clearAllData()" style="margin-left:auto">Clear all data</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = 'SeaPony2026!';
+const STORAGE_KEY = 'spp_signups';
+
+let allSignups = [];
+let filtered = [];
+let sortCol = 'date';
+let sortDir = -1; // -1 = desc, 1 = asc
+
+// ── AUTH ──
+function doLogin() {
+  const pw = document.getElementById('pw').value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('admin-wrap').style.display = 'none';
+  document.getElementById('pw').value = '';
+}
+
+// ── DATA ──
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    allSignups = raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    allSignups = [];
+  }
+  applyFilters();
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = allSignups.length;
+  const now = new Date();
+  const thisMonth = allSignups.filter(s => {
+    const d = new Date(s.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  document.getElementById('stat-recent').textContent = thisMonth.length;
+}
+
+// ── FILTERS & SORT ──
+function applyFilters() {
+  const from = document.getElementById('filter-from').value;
+  const to = document.getElementById('filter-to').value;
+  const search = document.getElementById('filter-search').value.toLowerCase();
+
+  filtered = allSignups.filter(s => {
+    const d = s.date.split('T')[0];
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    if (search && !s.name.toLowerCase().includes(search) && !s.email.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  sortData();
+}
+
+function clearFilters() {
+  document.getElementById('filter-from').value = '';
+  document.getElementById('filter-to').value = '';
+  document.getElementById('filter-search').value = '';
+  applyFilters();
+}
+
+function sortBy(col) {
+  if (sortCol === col) {
+    sortDir *= -1;
+  } else {
+    sortCol = col;
+    sortDir = col === 'date' ? -1 : 1;
+  }
+  ['date','name','email'].forEach(c => {
+    document.getElementById('sort-' + c).textContent = '';
+  });
+  document.getElementById('sort-' + col).textContent = sortDir === -1 ? '↓' : '↑';
+  sortData();
+}
+
+function sortData() {
+  filtered.sort((a, b) => {
+    let av = a[sortCol] || '';
+    let bv = b[sortCol] || '';
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+  renderTable();
+}
+
+function renderTable() {
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  let rows = filtered;
+  if (search) {
+    rows = filtered.filter(s =>
+      s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search)
+    );
+  }
+
+  document.getElementById('stat-filtered').textContent = rows.length;
+  const tbody = document.getElementById('signup-tbody');
+  const empty = document.getElementById('empty-state');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.map(s => {
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const timeStr = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+    return '<tr>' +
+      '<td class="date-cell">' + dateStr + ' · ' + timeStr + '</td>' +
+      '<td>' + escHtml(s.name || '—') + '</td>' +
+      '<td>' + escHtml(s.email) + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── EXPORT ──
+function getExportRows() {
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  if (!search) return filtered;
+  return filtered.filter(s =>
+    s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search)
+  );
+}
+
+function exportCSV() {
+  const rows = getExportRows();
+  const header = 'Date,Name,Email\n';
+  const body = rows.map(s => {
+    const d = new Date(s.date).toLocaleString('en-US');
+    return '"' + d + '","' + (s.name||'').replace(/"/g,'""') + '","' + s.email.replace(/"/g,'""') + '"';
+  }).join('\n');
+  const blob = new Blob([header + body], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SeaPonyPress_Signups_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPDF() {
+  const rows = getExportRows();
+  const dateRange = (() => {
+    const f = document.getElementById('filter-from').value;
+    const t = document.getElementById('filter-to').value;
+    if (f && t) return f + ' to ' + t;
+    if (f) return 'From ' + f;
+    if (t) return 'To ' + t;
+    return 'All time';
+  })();
+
+  const win = window.open('', '_blank');
+  win.document.write('<html><head><title>Sea Pony Press Signups</title>');
+  win.document.write('<style>body{font-family:Georgia,serif;padding:2rem;color:#1a1a18}');
+  win.document.write('h1{color:#2d4a2a;font-size:1.3rem;margin-bottom:0.25rem}');
+  win.document.write('p{color:#7a8c76;font-size:0.85rem;margin-bottom:1.5rem}');
+  win.document.write('table{width:100%;border-collapse:collapse;font-size:0.88rem}');
+  win.document.write('th{background:#2d4a2a;color:white;padding:0.5rem 0.75rem;text-align:left}');
+  win.document.write('td{padding:0.5rem 0.75rem;border-bottom:1px solid #ede9e0}');
+  win.document.write('tr:nth-child(even){background:#f5f2ec}');
+  win.document.write('</style></head><body>');
+  win.document.write('<h1>Sea Pony Press — Newsletter Signups</h1>');
+  win.document.write('<p>' + dateRange + ' · ' + rows.length + ' subscriber' + (rows.length !== 1 ? 's' : '') + ' · Exported ' + new Date().toLocaleDateString() + '</p>');
+  win.document.write('<table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
+  rows.forEach(s => {
+    const d = new Date(s.date).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+    win.document.write('<tr><td>' + d + '</td><td>' + (s.name||'—') + '</td><td>' + s.email + '</td></tr>');
+  });
+  win.document.write('</tbody></table></body></html>');
+  win.document.close();
+  win.print();
+}
+
+function clearAllData() {
+  if (confirm('Are you sure you want to delete all signup data? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    allSignups = [];
+    filtered = [];
+    renderTable();
+    updateStats();
+  }
+}
+</script>
+</body>
+</html>
