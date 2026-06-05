@@ -454,7 +454,7 @@ async function renderSales() {
   }).join('');
 }
 
-function exportSalesCSV() {
+async function exportSalesCSV() {
   var sales = await loadSalesData();
   var allItems = [];
   sales.forEach(function(s) { s.items.forEach(function(i) { allItems.push(Object.assign({},i,{date:s.date})); }); });
