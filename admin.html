@@ -5,269 +5,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPP Admin</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap');
-
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --ink: #1a1a18;
-    --paper: #f5f2ec;
-    --cream: #ede9e0;
-    --moss: #2d4a2a;
-    --moss-light: #3d6438;
-    --fog: #7a8c76;
-    --warm-white: #faf8f4;
-    --rust: #8b3a1e;
-    --success: #2d6e3e;
+    --ink: #1a1a18; --paper: #f5f2ec; --cream: #ede9e0;
+    --moss: #2d4a2a; --moss-light: #3d6438; --fog: #7a8c76;
+    --warm-white: #faf8f4; --rust: #8b3a1e; --success: #2d6e3e;
+    --light-moss: #eaf0e8;
   }
-
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Source Sans 3', sans-serif;
-    min-height: 100vh;
-  }
+  body { background: var(--paper); color: var(--ink); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; }
 
   /* LOGIN */
-  .login-wrap {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .login-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.2); border-radius: 8px; padding: 2.5rem; width: 100%; max-width: 340px; text-align: center; }
+  .login-card h1 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; color: var(--moss); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
+  .login-card p { font-size: 0.82rem; color: var(--fog); margin-bottom: 1.5rem; }
+  .error-msg { font-size: 0.82rem; color: var(--rust); margin-top: 0.5rem; display: none; }
 
-  .login-card {
-    background: var(--warm-white);
-    border: 1px solid rgba(45,74,42,0.2);
-    border-radius: 8px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 340px;
-    text-align: center;
-  }
-
-  .login-card h1 {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 1.2rem;
-    color: var(--moss);
-    margin-bottom: 0.4rem;
-  }
-
-  .login-card p {
-    font-size: 0.82rem;
-    color: var(--fog);
-    margin-bottom: 1.5rem;
-  }
-
-  .field-label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--fog);
-    margin-bottom: 0.3rem;
-    text-align: left;
-  }
-
+  /* INPUTS */
+  .field-label { display: block; font-size: 0.75rem; color: var(--fog); margin-bottom: 0.3rem; text-align: left; letter-spacing: 0.03em; }
   input[type="password"], input[type="text"], input[type="date"] {
-    width: 100%;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid rgba(45,74,42,0.22);
-    border-radius: 4px;
-    background: white;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    outline: none;
-    margin-bottom: 1rem;
-    transition: border-color 0.15s;
+    width: 100%; padding: 0.6rem 0.75rem; border: 1px solid rgba(45,74,42,0.22);
+    border-radius: 4px; background: white; font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem; outline: none; margin-bottom: 1rem; transition: border-color 0.15s;
   }
   input:focus { border-color: var(--moss); }
 
-  .btn {
-    display: inline-block;
-    padding: 0.7rem 1.4rem;
-    background: var(--moss);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-    text-decoration: none;
-  }
+  /* BUTTONS */
+  .btn { display: inline-block; padding: 0.65rem 1.2rem; background: var(--moss); color: white; border: none; border-radius: 5px; font-family: 'Source Sans 3', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; text-decoration: none; }
   .btn:hover { background: var(--moss-light); }
-  .btn.secondary {
-    background: var(--cream);
-    color: var(--moss);
-    border: 1px solid rgba(45,74,42,0.2);
-  }
+  .btn.secondary { background: var(--cream); color: var(--moss); border: 1px solid rgba(45,74,42,0.2); }
   .btn.secondary:hover { background: var(--paper); }
-  .btn.danger { background: var(--rust); }
+  .btn.danger { background: var(--rust); color: white; }
+  .btn.danger:hover { opacity: 0.88; }
+  .btn.small { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
 
-  .error-msg {
-    font-size: 0.82rem;
-    color: var(--rust);
-    margin-top: 0.5rem;
-    display: none;
-  }
-
-  /* ADMIN DASHBOARD */
+  /* ADMIN SHELL */
   .admin-wrap { display: none; }
+  .admin-header { background: var(--moss); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  .admin-header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: white; letter-spacing: 0.05em; }
+  .logout { font-size: 0.78rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
 
-  .admin-header {
-    background: var(--moss);
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  /* TABS */
+  .tabs { display: flex; background: var(--moss-light); }
+  .tab { padding: 0.75rem 1.25rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; transition: all 0.15s; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
+  .tab:hover { color: white; }
+  .tab.active { color: white; border-bottom: 3px solid rgba(255,255,255,0.8); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  .admin-header h1 {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 1rem;
-    color: white;
-    font-style: italic;
-  }
+  /* MAIN */
+  .admin-main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
 
-  .admin-header .logout {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    background: none;
-    border: none;
-    text-decoration: underline;
-  }
+  /* STATS */
+  .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .stat-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 6px; padding: 0.9rem 1.25rem; flex: 1; min-width: 100px; }
+  .stat-num { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--moss); font-weight: 700; line-height: 1; margin-bottom: 0.2rem; }
+  .stat-label { font-size: 0.72rem; color: var(--fog); text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .admin-main {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 1.5rem 1.25rem 4rem;
-  }
-
-  .controls {
-    background: var(--warm-white);
-    border: 1px solid rgba(45,74,42,0.15);
-    border-radius: 8px;
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: flex-end;
-  }
-
-  .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
+  /* CONTROLS */
+  .controls { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
+  .control-group { display: flex; flex-direction: column; gap: 0.25rem; }
   .control-group input { margin-bottom: 0; }
 
-  .stats-bar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-  }
-
-  .stat-card {
-    background: var(--warm-white);
-    border: 1px solid rgba(45,74,42,0.15);
-    border-radius: 6px;
-    padding: 0.9rem 1.25rem;
-    flex: 1;
-    min-width: 120px;
-  }
-
-  .stat-card .stat-num {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 1.6rem;
-    color: var(--moss);
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 0.2rem;
-  }
-
-  .stat-card .stat-label {
-    font-size: 0.72rem;
-    color: var(--fog);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .table-wrap {
-    background: var(--warm-white);
-    border: 1px solid rgba(45,74,42,0.15);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-  }
-
-  thead {
-    background: var(--moss);
-    color: white;
-  }
-
-  thead th {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    white-space: nowrap;
-    user-select: none;
-  }
-
+  /* TABLE */
+  .table-wrap { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead { background: var(--moss); color: white; }
+  thead th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; user-select: none; }
   thead th:hover { background: var(--moss-light); }
-  thead th .sort-arrow { margin-left: 4px; opacity: 0.6; }
-
-  tbody tr {
-    border-bottom: 1px solid rgba(45,74,42,0.08);
-    transition: background 0.1s;
-  }
-
+  tbody tr { border-bottom: 1px solid rgba(45,74,42,0.08); transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: rgba(45,74,42,0.04); }
-
-  tbody td {
-    padding: 0.7rem 1rem;
-    color: var(--ink);
-  }
-
+  tbody td { padding: 0.7rem 1rem; color: var(--ink); }
   .date-cell { color: var(--fog); font-size: 0.82rem; }
-
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--fog);
-  }
-
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--fog); }
   .empty-state p { font-size: 0.9rem; margin-top: 0.5rem; }
 
-  .export-row {
-    display: flex;
-    gap: 0.6rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-  }
+  /* EXPORT */
+  .export-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 
-  @media (max-width: 500px) {
+  /* ARTIST MGMT */
+  .section-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .section-card h2 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; color: var(--moss); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
+  .section-card p { font-size: 0.82rem; color: var(--fog); margin-bottom: 1.25rem; line-height: 1.5; }
+  .add-artist-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: end; margin-bottom: 1.5rem; }
+  .add-artist-row input { margin-bottom: 0; }
+  .artist-list-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .artist-list-item.spp-item { background: rgba(45,74,42,0.08); color: var(--moss); font-style: normal; }
+  .artist-name { flex: 1; }
+  .save-notice { display: none; background: rgba(45,110,62,0.1); color: var(--success); border-radius: 5px; padding: 0.6rem 1rem; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
+
+  /* SALES */
+  .artist-breakdown-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; }
+  .adr-name { font-weight: 600; color: var(--ink); font-size: 0.9rem; }
+  .adr-sub { font-size: 0.75rem; color: var(--fog); margin-top: 0.1rem; }
+  .adr-amount { color: var(--moss); font-weight: 700; font-size: 1rem; white-space: nowrap; margin-left: 1rem; }
+
+  @media (max-width: 600px) {
     .controls { flex-direction: column; }
     .stats-bar { flex-direction: column; }
+    .add-artist-row { grid-template-columns: 1fr; }
+    .admin-main { padding: 1rem 0.85rem 3rem; }
+    .tab { padding: 0.65rem 0.85rem; font-size: 0.78rem; }
+    table { font-size: 0.78rem; }
+    thead th { padding: 0.6rem 0.6rem; font-size: 0.72rem; }
+    tbody td { padding: 0.55rem 0.6rem; }
+    .export-row { flex-direction: column; }
+    .export-row .btn { width: 100%; text-align: center; }
+    input[type="text"], input[type="password"], input[type="date"] { font-size: 1rem; }
   }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
     <h1>Sea Pony Press</h1>
@@ -275,97 +126,128 @@
     <label class="field-label" for="pw">Password</label>
     <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn" onclick="doLogin()" style="width:100%">Sign in</button>
-    <div class="error-msg" id="login-error">Incorrect password</div>
+    <div class="error-msg" id="login-error">Incorrect password — try again</div>
   </div>
 </div>
 
-<!-- ADMIN DASHBOARD -->
 <div class="admin-wrap" id="admin-wrap">
   <div class="admin-header">
-    <h1>Sea Pony Press — Newsletter Signups</h1>
+    <h1>Sea Pony Press — Admin</h1>
     <button class="logout" onclick="doLogout()">Sign out</button>
   </div>
 
-  <div class="admin-main">
+  <div class="tabs">
+    <button class="tab active" id="tab-btn-signups" onclick="switchTab('signups', this)">Signups</button>
+    <button class="tab" id="tab-btn-sales" onclick="switchTab('sales', this)">Sales</button>
+    <button class="tab" id="tab-btn-artists" onclick="switchTab('artists', this)">Artists</button>
+  </div>
 
-    <!-- Stats -->
-    <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-num" id="stat-total">0</div>
-        <div class="stat-label">Total signups</div>
+  <!-- SIGNUPS -->
+  <div class="tab-content active" id="tab-signups">
+    <div class="admin-main">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total signups</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-filtered">0</div><div class="stat-label">Showing</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-recent">0</div><div class="stat-label">This month</div></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-filtered">0</div>
-        <div class="stat-label">Showing</div>
+      <div class="controls">
+        <div class="control-group"><label class="field-label">From</label><input type="date" id="filter-from"></div>
+        <div class="control-group"><label class="field-label">To</label><input type="date" id="filter-to"></div>
+        <div class="control-group"><label class="field-label">Search</label><input type="text" id="filter-search" placeholder="Name or email..." oninput="renderSignupTable()"></div>
+        <button class="btn secondary" onclick="clearFilters()">Clear</button>
+        <button class="btn" onclick="applyFilters()">Apply</button>
       </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-recent">0</div>
-        <div class="stat-label">This month</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th onclick="sortBy('date')">Date <span id="sort-date">↓</span></th>
+            <th onclick="sortBy('name')">Name <span id="sort-name"></span></th>
+            <th onclick="sortBy('email')">Email <span id="sort-email"></span></th>
+          </tr></thead>
+          <tbody id="signup-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="signup-empty" style="display:none"><strong>No signups yet</strong><p>Check back after purchases are made.</p></div>
+      </div>
+      <div class="export-row">
+        <button class="btn secondary" onclick="exportSignupsCSV()">Export CSV</button>
+        <button class="btn secondary" onclick="exportSignupsPDF()">Export PDF</button>
+        <button class="btn danger" onclick="clearSignups()" style="margin-left:auto">Clear data</button>
       </div>
     </div>
+  </div>
 
-    <!-- Controls -->
-    <div class="controls">
-      <div class="control-group">
-        <label class="field-label">From date</label>
-        <input type="date" id="filter-from">
+  <!-- SALES -->
+  <div class="tab-content" id="tab-sales">
+    <div class="admin-main">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="sales-count">0</div><div class="stat-label">Items sold</div></div>
+        <div class="stat-card"><div class="stat-num" id="sales-revenue">$0</div><div class="stat-label">Total revenue</div></div>
+        <div class="stat-card"><div class="stat-num" id="sales-spp">$0</div><div class="stat-label">SPP keeps</div></div>
+        <div class="stat-card"><div class="stat-num" id="sales-artists">$0</div><div class="stat-label">Owed to artists</div></div>
       </div>
-      <div class="control-group">
-        <label class="field-label">To date</label>
-        <input type="date" id="filter-to">
+      <div class="section-card">
+        <h2>By Artist</h2>
+        <p>Running totals — use for quarterly payouts.</p>
+        <div id="artist-breakdown"></div>
       </div>
-      <div class="control-group">
-        <label class="field-label">Search name or email</label>
-        <input type="text" id="filter-search" placeholder="Search..." oninput="renderTable()">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Artist</th><th>Price</th><th>Artist gets</th><th>SPP keeps</th>
+          </tr></thead>
+          <tbody id="sales-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="sales-empty" style="display:none"><strong>No sales yet</strong><p>Sales appear here after completed purchases.</p></div>
       </div>
-      <button class="btn secondary" onclick="clearFilters()">Clear filters</button>
-      <button class="btn" onclick="applyFilters()">Apply</button>
-    </div>
-
-    <!-- Table -->
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th onclick="sortBy('date')">Date <span class="sort-arrow" id="sort-date">↓</span></th>
-            <th onclick="sortBy('name')">Name <span class="sort-arrow" id="sort-name"></span></th>
-            <th onclick="sortBy('email')">Email <span class="sort-arrow" id="sort-email"></span></th>
-          </tr>
-        </thead>
-        <tbody id="signup-tbody"></tbody>
-      </table>
-      <div class="empty-state" id="empty-state" style="display:none">
-        <strong>No signups found</strong>
-        <p>Adjust your filters or check back after purchases are made.</p>
+      <div class="export-row">
+        <button class="btn secondary" onclick="exportSalesCSV()">Export CSV</button>
+        <button class="btn danger" onclick="clearSales()" style="margin-left:auto">Clear data</button>
       </div>
     </div>
+  </div>
 
-    <!-- Export -->
-    <div class="export-row">
-      <button class="btn secondary" onclick="exportCSV()">Export as CSV / Excel</button>
-      <button class="btn secondary" onclick="exportPDF()">Export as PDF</button>
-      <button class="btn danger" onclick="clearAllData()" style="margin-left:auto">Clear all data</button>
+  <!-- ARTISTS -->
+  <div class="tab-content" id="tab-artists">
+    <div class="admin-main">
+      <div class="section-card">
+        <h2>Manage Artist List</h2>
+        <p>Add or remove artists from the purchase dropdown. Changes are live immediately — no GitHub upload needed.</p>
+        <div class="add-artist-row">
+          <div>
+            <label class="field-label">Add new artist</label>
+            <input type="text" id="new-artist" placeholder="e.g. Grace Kelley / Sundew Print" onkeydown="if(event.key==='Enter')addArtist()">
+          </div>
+          <button class="btn" onclick="addArtist()">Add</button>
+        </div>
+        <div id="artist-list"></div>
+        <div class="save-notice" id="save-notice">Artist list updated — live on the page</div>
+      </div>
     </div>
-
   </div>
 </div>
 
 <script>
-const ADMIN_PASSWORD = 'SeaPony2026!';
-const STORAGE_KEY = 'spp_signups';
+var PASS = 'SeaPony2026!';
+var SIGNUPS_KEY = 'spp_signups';
+var ARTISTS_KEY = 'spp_artists';
+var SALES_KEY = 'spp_sales';
+var DEFAULT_ARTISTS = [
+  { name: 'Bethany Goodrich' },
+  { name: 'Rebecca Danon / Ursa Prints' }
+];
 
-let allSignups = [];
-let filtered = [];
-let sortCol = 'date';
-let sortDir = -1; // -1 = desc, 1 = asc
+var allSignups = [];
+var filtered = [];
+var sortCol = 'date';
+var sortDir = -1;
 
-// ── AUTH ──
 function doLogin() {
-  const pw = document.getElementById('pw').value;
-  if (pw === ADMIN_PASSWORD) {
+  var pw = document.getElementById('pw').value;
+  if (pw === PASS) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    loadData();
+    loadSignups();
+    renderArtistList();
   } else {
     document.getElementById('login-error').style.display = 'block';
   }
@@ -377,42 +259,48 @@ function doLogout() {
   document.getElementById('pw').value = '';
 }
 
-// ── DATA ──
-function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    allSignups = raw ? JSON.parse(raw) : [];
-  } catch(e) {
-    allSignups = [];
-  }
-  applyFilters();
-  updateStats();
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'sales') renderSales();
+  if (tab === 'artists') renderArtistList();
 }
 
-function updateStats() {
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── SIGNUPS ──
+function loadSignups() {
+  try { allSignups = JSON.parse(localStorage.getItem(SIGNUPS_KEY) || '[]'); }
+  catch(e) { allSignups = []; }
+  applyFilters();
+  updateSignupStats();
+}
+
+function updateSignupStats() {
   document.getElementById('stat-total').textContent = allSignups.length;
-  const now = new Date();
-  const thisMonth = allSignups.filter(s => {
-    const d = new Date(s.date);
+  var now = new Date();
+  var month = allSignups.filter(function(s) {
+    var d = new Date(s.date);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
-  document.getElementById('stat-recent').textContent = thisMonth.length;
+  document.getElementById('stat-recent').textContent = month.length;
 }
 
-// ── FILTERS & SORT ──
 function applyFilters() {
-  const from = document.getElementById('filter-from').value;
-  const to = document.getElementById('filter-to').value;
-  const search = document.getElementById('filter-search').value.toLowerCase();
-
-  filtered = allSignups.filter(s => {
-    const d = s.date.split('T')[0];
+  var from = document.getElementById('filter-from').value;
+  var to = document.getElementById('filter-to').value;
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  filtered = allSignups.filter(function(s) {
+    var d = s.date.split('T')[0];
     if (from && d < from) return false;
     if (to && d > to) return false;
-    if (search && !s.name.toLowerCase().includes(search) && !s.email.toLowerCase().includes(search)) return false;
+    if (search && s.name.toLowerCase().indexOf(search) === -1 && s.email.toLowerCase().indexOf(search) === -1) return false;
     return true;
   });
-
   sortData();
 }
 
@@ -424,130 +312,203 @@ function clearFilters() {
 }
 
 function sortBy(col) {
-  if (sortCol === col) {
-    sortDir *= -1;
-  } else {
-    sortCol = col;
-    sortDir = col === 'date' ? -1 : 1;
-  }
-  ['date','name','email'].forEach(c => {
-    document.getElementById('sort-' + c).textContent = '';
-  });
+  if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = col === 'date' ? -1 : 1; }
+  ['date','name','email'].forEach(function(c) { document.getElementById('sort-' + c).textContent = ''; });
   document.getElementById('sort-' + col).textContent = sortDir === -1 ? '↓' : '↑';
   sortData();
 }
 
 function sortData() {
-  filtered.sort((a, b) => {
-    let av = a[sortCol] || '';
-    let bv = b[sortCol] || '';
+  filtered.sort(function(a, b) {
+    var av = a[sortCol] || '', bv = b[sortCol] || '';
     return av < bv ? -sortDir : av > bv ? sortDir : 0;
   });
-  renderTable();
+  renderSignupTable();
 }
 
-function renderTable() {
-  const search = document.getElementById('filter-search').value.toLowerCase();
-  let rows = filtered;
-  if (search) {
-    rows = filtered.filter(s =>
-      s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search)
-    );
-  }
-
+function renderSignupTable() {
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s) {
+    return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1;
+  }) : filtered;
   document.getElementById('stat-filtered').textContent = rows.length;
-  const tbody = document.getElementById('signup-tbody');
-  const empty = document.getElementById('empty-state');
-
-  if (rows.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-
+  var tbody = document.getElementById('signup-tbody');
+  var empty = document.getElementById('signup-empty');
+  if (rows.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  tbody.innerHTML = rows.map(s => {
-    const d = new Date(s.date);
-    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-    const timeStr = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-    return '<tr>' +
-      '<td class="date-cell">' + dateStr + ' · ' + timeStr + '</td>' +
-      '<td>' + escHtml(s.name || '—') + '</td>' +
-      '<td>' + escHtml(s.email) + '</td>' +
-    '</tr>';
+  tbody.innerHTML = rows.map(function(s) {
+    var d = new Date(s.date);
+    var ds = d.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+    var ts = d.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'});
+    return '<tr><td class="date-cell">' + ds + ' · ' + ts + '</td><td>' + esc(s.name||'—') + '</td><td>' + esc(s.email) + '</td></tr>';
   }).join('');
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ── EXPORT ──
-function getExportRows() {
-  const search = document.getElementById('filter-search').value.toLowerCase();
-  if (!search) return filtered;
-  return filtered.filter(s =>
-    s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search)
-  );
-}
-
-function exportCSV() {
-  const rows = getExportRows();
-  const header = 'Date,Name,Email\n';
-  const body = rows.map(s => {
-    const d = new Date(s.date).toLocaleString('en-US');
-    return '"' + d + '","' + (s.name||'').replace(/"/g,'""') + '","' + s.email.replace(/"/g,'""') + '"';
+function exportSignupsCSV() {
+  var rows = getSignupExportRows();
+  var header = 'Date,Name,Email\n';
+  var body = rows.map(function(s) {
+    return '"' + new Date(s.date).toLocaleString() + '","' + (s.name||'').replace(/"/g,'""') + '","' + s.email.replace(/"/g,'""') + '"';
   }).join('\n');
-  const blob = new Blob([header + body], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'SeaPonyPress_Signups_' + new Date().toISOString().split('T')[0] + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadCSV(header + body, 'SeaPonyPress_Signups_' + today() + '.csv');
 }
 
-function exportPDF() {
-  const rows = getExportRows();
-  const dateRange = (() => {
-    const f = document.getElementById('filter-from').value;
-    const t = document.getElementById('filter-to').value;
-    if (f && t) return f + ' to ' + t;
-    if (f) return 'From ' + f;
-    if (t) return 'To ' + t;
-    return 'All time';
-  })();
-
-  const win = window.open('', '_blank');
-  win.document.write('<html><head><title>Sea Pony Press Signups</title>');
-  win.document.write('<style>body{font-family:Georgia,serif;padding:2rem;color:#1a1a18}');
-  win.document.write('h1{color:#2d4a2a;font-size:1.3rem;margin-bottom:0.25rem}');
-  win.document.write('p{color:#7a8c76;font-size:0.85rem;margin-bottom:1.5rem}');
-  win.document.write('table{width:100%;border-collapse:collapse;font-size:0.88rem}');
-  win.document.write('th{background:#2d4a2a;color:white;padding:0.5rem 0.75rem;text-align:left}');
-  win.document.write('td{padding:0.5rem 0.75rem;border-bottom:1px solid #ede9e0}');
-  win.document.write('tr:nth-child(even){background:#f5f2ec}');
-  win.document.write('</style></head><body>');
-  win.document.write('<h1>Sea Pony Press — Newsletter Signups</h1>');
-  win.document.write('<p>' + dateRange + ' · ' + rows.length + ' subscriber' + (rows.length !== 1 ? 's' : '') + ' · Exported ' + new Date().toLocaleDateString() + '</p>');
+function exportSignupsPDF() {
+  var rows = getSignupExportRows();
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>Sea Pony Press Signups</title><style>body{font-family:Georgia,serif;padding:2rem;color:#1a1a18}h1{color:#2d4a2a;font-size:1.3rem;margin-bottom:.25rem}p{color:#7a8c76;font-size:.85rem;margin-bottom:1.5rem}table{width:100%;border-collapse:collapse;font-size:.88rem}th{background:#2d4a2a;color:white;padding:.5rem .75rem;text-align:left}td{padding:.5rem .75rem;border-bottom:1px solid #ede9e0}tr:nth-child(even){background:#f5f2ec}</style></head><body>');
+  win.document.write('<h1>Sea Pony Press Signups</h1><p>' + rows.length + ' subscribers · ' + new Date().toLocaleDateString() + '</p>');
   win.document.write('<table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
-  rows.forEach(s => {
-    const d = new Date(s.date).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+  rows.forEach(function(s) {
+    var d = new Date(s.date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
     win.document.write('<tr><td>' + d + '</td><td>' + (s.name||'—') + '</td><td>' + s.email + '</td></tr>');
   });
   win.document.write('</tbody></table></body></html>');
-  win.document.close();
-  win.print();
+  win.document.close(); win.print();
 }
 
-function clearAllData() {
-  if (confirm('Are you sure you want to delete all signup data? This cannot be undone.')) {
-    localStorage.removeItem(STORAGE_KEY);
-    allSignups = [];
-    filtered = [];
-    renderTable();
-    updateStats();
+function getSignupExportRows() {
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  return search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
+}
+
+function clearSignups() {
+  if (confirm('Delete all signup data? Cannot be undone.')) {
+    localStorage.removeItem(SIGNUPS_KEY);
+    allSignups = []; filtered = [];
+    renderSignupTable(); updateSignupStats();
   }
+}
+
+// ── SALES ──
+function loadSalesData() {
+  try { return JSON.parse(localStorage.getItem(SALES_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function renderSales() {
+  var sales = loadSalesData();
+  var allItems = [];
+  sales.forEach(function(s) {
+    s.items.forEach(function(item) {
+      allItems.push(Object.assign({}, item, {date: s.date}));
+    });
+  });
+
+  var totalRev = allItems.reduce(function(sum,i) { return sum + i.price; }, 0);
+  var totalSPP = allItems.reduce(function(sum,i) { return sum + i.sppAmt; }, 0);
+  var totalArt = allItems.reduce(function(sum,i) { return sum + i.artistAmt; }, 0);
+
+  document.getElementById('sales-count').textContent = allItems.length;
+  document.getElementById('sales-revenue').textContent = '$' + totalRev.toFixed(2);
+  document.getElementById('sales-spp').textContent = '$' + totalSPP.toFixed(2);
+  document.getElementById('sales-artists').textContent = '$' + totalArt.toFixed(2);
+
+  var byArtist = {};
+  allItems.forEach(function(item) {
+    if (!item.isSPP) {
+      if (!byArtist[item.artist]) byArtist[item.artist] = {count:0, total:0, owed:0};
+      byArtist[item.artist].count++;
+      byArtist[item.artist].total += item.price;
+      byArtist[item.artist].owed += item.artistAmt;
+    }
+  });
+
+  var bd = document.getElementById('artist-breakdown');
+  var entries = Object.entries(byArtist).sort(function(a,b) { return b[1].owed - a[1].owed; });
+  if (entries.length === 0) {
+    bd.innerHTML = '<p style="color:var(--fog);font-size:.88rem;padding:.5rem 0">No artist sales yet.</p>';
+  } else {
+    bd.innerHTML = entries.map(function(e) {
+      return '<div class="artist-breakdown-row"><div><div class="adr-name">' + esc(e[0]) + '</div><div class="adr-sub">' + e[1].count + ' piece' + (e[1].count !== 1 ? 's' : '') + ' · $' + e[1].total.toFixed(2) + ' total</div></div><div class="adr-amount">$' + e[1].owed.toFixed(2) + ' owed</div></div>';
+    }).join('');
+  }
+
+  var tbody = document.getElementById('sales-tbody');
+  var empty = document.getElementById('sales-empty');
+  if (allItems.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  var sorted = allItems.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); });
+  tbody.innerHTML = sorted.map(function(item) {
+    var d = new Date(item.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return '<tr><td class="date-cell">' + d + '</td><td>' + esc(item.artist) + '</td><td>$' + item.price.toFixed(2) + '</td><td>' + (item.isSPP ? '—' : '$' + item.artistAmt.toFixed(2)) + '</td><td>$' + item.sppAmt.toFixed(2) + '</td></tr>';
+  }).join('');
+}
+
+function exportSalesCSV() {
+  var sales = loadSalesData();
+  var allItems = [];
+  sales.forEach(function(s) { s.items.forEach(function(i) { allItems.push(Object.assign({},i,{date:s.date})); }); });
+  var header = 'Date,Artist,Sale Price,Artist Gets,SPP Keeps\n';
+  var body = allItems.map(function(i) {
+    return '"' + new Date(i.date).toLocaleString() + '","' + i.artist + '",' + i.price.toFixed(2) + ',' + i.artistAmt.toFixed(2) + ',' + i.sppAmt.toFixed(2);
+  }).join('\n');
+  downloadCSV(header + body, 'SeaPonyPress_Sales_' + today() + '.csv');
+}
+
+function clearSales() {
+  if (confirm('Delete all sales data? Cannot be undone.')) {
+    localStorage.removeItem(SALES_KEY);
+    renderSales();
+  }
+}
+
+// ── ARTISTS ──
+function getArtists() {
+  try { return JSON.parse(localStorage.getItem(ARTISTS_KEY) || JSON.stringify(DEFAULT_ARTISTS)); }
+  catch(e) { return DEFAULT_ARTISTS.slice(); }
+}
+
+function saveArtists(artists) {
+  localStorage.setItem(ARTISTS_KEY, JSON.stringify(artists));
+  var n = document.getElementById('save-notice');
+  n.style.display = 'block';
+  setTimeout(function() { n.style.display = 'none'; }, 3000);
+}
+
+function renderArtistList() {
+  var artists = getArtists();
+  var html = artists.map(function(a, i) {
+    return '<div class="artist-list-item"><span class="artist-name">' + esc(a.name) + '</span><button class="btn danger small" onclick="removeArtist(' + i + ')">Remove</button></div>';
+  }).join('');
+  html += '<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (SPP artwork) — always included</span></div>';
+  document.getElementById('artist-list').innerHTML = html;
+}
+
+function addArtist() {
+  var input = document.getElementById('new-artist');
+  var name = input.value.trim();
+  if (!name) return;
+  var artists = getArtists();
+  if (artists.find(function(a) { return a.name.toLowerCase() === name.toLowerCase(); })) {
+    alert('That artist is already in the list.'); return;
+  }
+  artists.push({name: name});
+  saveArtists(artists);
+  renderArtistList();
+  input.value = '';
+}
+
+function removeArtist(index) {
+  var artists = getArtists();
+  if (confirm('Remove ' + artists[index].name + '?')) {
+    artists.splice(index, 1);
+    saveArtists(artists);
+    renderArtistList();
+  }
+}
+
+// ── UTILS ──
+function downloadCSV(content, filename) {
+  var blob = new Blob([content], {type: 'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
 }
 </script>
 </body>
