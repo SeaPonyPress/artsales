@@ -564,7 +564,7 @@ function getArtists() {
   }
 }
 
-const ARTISTS = getArtists();
+
 
 const SPP_PCT = 0.20;
 const NB_ENDPOINT = "https://www.sitkawild.org/forms/signups";
@@ -586,7 +586,7 @@ function addRow() {
     '<div class="art-row-grid">' +
       '<div><span class="field-label">Artist</span>' +
       '<select id="a-' + id + '" onchange="recalc()"><option value="">— Select artist —</option>' +
-      ARTISTS.map(a => '<option value="' + a.name + '">' + a.name + '</option>').join('') +
+      getArtists().map(a => '<option value="' + a.name + '">' + a.name + '</option>').join('') +
       '</select></div>' +
       '<div><span class="field-label">Price (from artwork)</span>' +
       '<input type="number" id="p-' + id + '" placeholder="$" min="1" step="1" oninput="recalc()"></div>' +
@@ -692,7 +692,7 @@ function recalc() {
           const email = document.getElementById('nl-email').value.trim();
           if (nlChecked && email) await submitToNationBuilder(firstName, email);
           // Save sales record
-          saveSalesRecord();
+          await saveSalesRecord();
           document.getElementById('pay-section').style.display = 'none';
           document.getElementById('art-rows').style.display = 'none';
           document.querySelector('.add-btn').style.display = 'none';
@@ -719,8 +719,8 @@ function recalc() {
   }
 }
 
-const SUPABASE_URL =  + SUPABASE_URL + ;
-const SUPABASE_KEY =  + SUPABASE_KEY + ;
+const SUPABASE_URL = 'https://vyjnyoropzkirzapjssc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xAy7JBkovw65m8Vrzm_qGQ_4X-0DSXI';
 
 async function submitToNationBuilder(firstName, email) {
   try {
