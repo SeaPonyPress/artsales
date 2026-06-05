@@ -228,13 +228,21 @@
 
 <script>
 var PASS = 'SeaPony2026!';
-var SIGNUPS_KEY = 'spp_signups';
 var ARTISTS_KEY = 'spp_artists';
-var SALES_KEY = 'spp_sales';
 var DEFAULT_ARTISTS = [
   { name: 'Bethany Goodrich' },
   { name: 'Rebecca Danon / Ursa Prints' }
 ];
+var SB_URL =  + SUPABASE_URL + ;
+var SB_KEY =  + SUPABASE_KEY + ;
+
+function sbHeaders() {
+  return {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json'
+  };
+}
 
 var allSignups = [];
 var filtered = [];
@@ -246,7 +254,7 @@ function doLogin() {
   if (pw === PASS) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    loadSignups();
+    loadSignups().then(function() {});
     renderArtistList();
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -273,9 +281,12 @@ function esc(s) {
 }
 
 // ── SIGNUPS ──
-function loadSignups() {
-  try { allSignups = JSON.parse(localStorage.getItem(SIGNUPS_KEY) || '[]'); }
-  catch(e) { allSignups = []; }
+async function loadSignups() {
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/signups?select=*&order=created_at.desc', { headers: sbHeaders() });
+    const data = await res.json();
+    allSignups = data.map(function(r) { return { date: r.created_at, name: r.name || '', email: r.email }; });
+  } catch(e) { allSignups = []; }
   applyFilters();
   updateSignupStats();
 }
@@ -372,22 +383,30 @@ function getSignupExportRows() {
   return search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
 }
 
-function clearSignups() {
+async function clearSignups() {
   if (confirm('Delete all signup data? Cannot be undone.')) {
-    localStorage.removeItem(SIGNUPS_KEY);
+    await fetch(SB_URL + '/rest/v1/signups?id=gte.0', { method: 'DELETE', headers: sbHeaders() });
     allSignups = []; filtered = [];
     renderSignupTable(); updateSignupStats();
   }
 }
 
 // ── SALES ──
-function loadSalesData() {
-  try { return JSON.parse(localStorage.getItem(SALES_KEY) || '[]'); }
-  catch(e) { return []; }
+async function loadSalesData() {
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/sales?select=*&order=created_at.desc', { headers: sbHeaders() });
+    const data = await res.json();
+    return data.map(function(r) {
+      return {
+        date: r.created_at,
+        items: [{ artist: r.artist, price: r.price, artistAmt: r.artist_amount, sppAmt: r.spp_amount, isSPP: r.artist_amount === 0 }]
+      };
+    });
+  } catch(e) { return []; }
 }
 
-function renderSales() {
-  var sales = loadSalesData();
+async function renderSales() {
+  var sales = await loadSalesData();
   var allItems = [];
   sales.forEach(function(s) {
     s.items.forEach(function(item) {
@@ -436,7 +455,7 @@ function renderSales() {
 }
 
 function exportSalesCSV() {
-  var sales = loadSalesData();
+  var sales = await loadSalesData();
   var allItems = [];
   sales.forEach(function(s) { s.items.forEach(function(i) { allItems.push(Object.assign({},i,{date:s.date})); }); });
   var header = 'Date,Artist,Sale Price,Artist Gets,SPP Keeps\n';
@@ -446,9 +465,9 @@ function exportSalesCSV() {
   downloadCSV(header + body, 'SeaPonyPress_Sales_' + today() + '.csv');
 }
 
-function clearSales() {
+async function clearSales() {
   if (confirm('Delete all sales data? Cannot be undone.')) {
-    localStorage.removeItem(SALES_KEY);
+    await fetch(SB_URL + '/rest/v1/sales?id=gte.0', { method: 'DELETE', headers: sbHeaders() });
     renderSales();
   }
 }
@@ -471,7 +490,7 @@ function renderArtistList() {
   var html = artists.map(function(a, i) {
     return '<div class="artist-list-item"><span class="artist-name">' + esc(a.name) + '</span><button class="btn danger small" onclick="removeArtist(' + i + ')">Remove</button></div>';
   }).join('');
-  html += '<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (SPP artwork) — always included</span></div>';
+  html += '<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (Full donation) — always included</span></div>';
   document.getElementById('artist-list').innerHTML = html;
 }
 

@@ -719,28 +719,26 @@ function recalc() {
   }
 }
 
+const SUPABASE_URL =  + SUPABASE_URL + ;
+const SUPABASE_KEY =  + SUPABASE_KEY + ;
+
 async function submitToNationBuilder(firstName, email) {
-  // Save to local admin portal
   try {
-    const STORAGE_KEY = 'spp_signups';
-    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    existing.unshift({ date: new Date().toISOString(), name: firstName, email: email });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-  } catch(e) {}
-  // Also attempt NationBuilder post
-  try {
-    const formData = new FormData();
-    formData.append('signup[first_name]', firstName);
-    formData.append('signup[email]', email);
-    formData.append('page_id', NB_PAGE_ID);
-    formData.append('return_to', NB_RETURN_TO);
-    formData.append('email_address', '');
-    await fetch(NB_ENDPOINT, { method: 'POST', body: formData, mode: 'no-cors' });
+    await fetch(SUPABASE_URL + '/rest/v1/signups', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ name: firstName, email: email })
+    });
     return true;
   } catch(e) { return false; }
 }
 
-function saveSalesRecord() {
+async function saveSalesRecord() {
   try {
     const rows = document.querySelectorAll('.art-row');
     const items = [];
@@ -756,16 +754,23 @@ function saveSalesRecord() {
         items.push({
           artist: artist,
           price: price,
-          artistAmt: isSPP ? 0 : price * 0.8,
-          sppAmt: isSPP ? price : price * 0.2,
-          isSPP: isSPP
+          artist_amount: isSPP ? 0 : price * 0.8,
+          spp_amount: isSPP ? price : price * 0.2
         });
       }
     });
-    if (items.length === 0) return;
-    const existing = JSON.parse(localStorage.getItem('spp_sales') || '[]');
-    existing.unshift({ date: new Date().toISOString(), items: items });
-    localStorage.setItem('spp_sales', JSON.stringify(existing));
+    for (const item of items) {
+      await fetch(SUPABASE_URL + '/rest/v1/sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(item)
+      });
+    }
   } catch(e) {}
 }
 
