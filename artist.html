@@ -411,7 +411,7 @@ async function handleSubmit() {
 
   try {
     // 1. Save to Supabase artists table
-    await fetch(SUPABASE_URL + '/rest/v1/artists', {
+    const artistRes = await fetch(SUPABASE_URL + '/rest/v1/artists', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -421,6 +421,10 @@ async function handleSubmit() {
       },
       body: JSON.stringify({ name, email, phone, location, portfolio, medium })
     });
+    if (!artistRes.ok) {
+      var errText = await artistRes.text();
+      throw new Error('Supabase artists error ' + artistRes.status + ': ' + errText);
+    }
 
     // 2. Also add to signups if not already there
     const existing = await fetch(
@@ -429,7 +433,7 @@ async function handleSubmit() {
     );
     const existingData = await existing.json();
     if (existingData.length === 0) {
-      await fetch(SUPABASE_URL + '/rest/v1/signups', {
+      const signupRes = await fetch(SUPABASE_URL + '/rest/v1/signups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -439,10 +443,14 @@ async function handleSubmit() {
         },
         body: JSON.stringify({ name, email, spp_list: true, scs_list: true, source: 'artist_interest' })
       });
+      if (!signupRes.ok) {
+        var errText2 = await signupRes.text();
+        throw new Error('Supabase signups error ' + signupRes.status + ': ' + errText2);
+      }
     }
 
     // 3. Send emails via EmailJS
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    const emailRes = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       to_name: name,
       to_email: email,
       artist_phone: phone || 'Not provided',
@@ -451,6 +459,9 @@ async function handleSubmit() {
       artist_medium: medium,
       reply_to: 'info@sitkawild.org'
     });
+    if (emailRes.status !== 200) {
+      throw new Error('EmailJS error ' + emailRes.status + ': ' + emailRes.text);
+    }
 
     // Show success
     document.getElementById('form-card').style.display = 'none';
