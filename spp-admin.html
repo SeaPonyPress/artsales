@@ -361,7 +361,7 @@ function exportSignupsPDF() {
 async function deleteSignup(date, email) {
   if (confirm('Delete signup for ' + email + '?')) {
     try {
-      await fetch(SB_URL + '/rest/v1/signups?email=eq.' + encodeURIComponent(email) + '&created_at=eq.' + encodeURIComponent(date), {
+      await fetch(SB_URL + '/rest/v1/signups?email=eq.' + encodeURIComponent(email), {
         method: 'DELETE',
         headers: sbHeaders()
       });
