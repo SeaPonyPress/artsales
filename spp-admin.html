@@ -334,7 +334,8 @@ function renderSignupTable() {
     var d=new Date(s.date);
     var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
     var ts=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    return '<tr><td class="date-cell">'+ds+' · '+ts+'</td><td>'+esc(s.name||'—')+'</td><td>'+esc(s.email)+'</td><td><button class="btn danger small" onclick="deleteSignup('+JSON.stringify(s.date)+','+JSON.stringify(s.email)+')" style="padding:0.2rem 0.5rem;font-size:0.72rem">✕</button></td></tr>';
+    var safeEmail = s.email.replace(/'/g, "\'");
+    return '<tr><td class="date-cell">'+ds+' · '+ts+'</td><td>'+esc(s.name||'—')+'</td><td>'+esc(s.email)+'</td><td><button class="btn danger small" onclick="deleteSignup('' + safeEmail + '')" style="padding:0.2rem 0.5rem;font-size:0.72rem">✕</button></td></tr>';
   }).join('');
 }
 
@@ -358,7 +359,7 @@ function exportSignupsPDF() {
   win.document.close(); win.print();
 }
 
-async function deleteSignup(date, email) {
+async function deleteSignup(email) {
   if (confirm('Delete signup for ' + email + '?')) {
     try {
       await fetch(SB_URL + '/rest/v1/signups?email=eq.' + encodeURIComponent(email), {
