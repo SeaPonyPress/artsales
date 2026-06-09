@@ -14,24 +14,14 @@
     --light-moss: #eaf0e8;
   }
   body { background: var(--paper); color: var(--ink); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; }
-
-  /* LOGIN */
   .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .login-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.2); border-radius: 8px; padding: 2.5rem; width: 100%; max-width: 340px; text-align: center; }
   .login-card h1 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; color: var(--moss); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
   .login-card p { font-size: 0.82rem; color: var(--fog); margin-bottom: 1.5rem; }
   .error-msg { font-size: 0.82rem; color: var(--rust); margin-top: 0.5rem; display: none; }
-
-  /* INPUTS */
   .field-label { display: block; font-size: 0.75rem; color: var(--fog); margin-bottom: 0.3rem; text-align: left; letter-spacing: 0.03em; }
-  input[type="password"], input[type="text"], input[type="date"] {
-    width: 100%; padding: 0.6rem 0.75rem; border: 1px solid rgba(45,74,42,0.22);
-    border-radius: 4px; background: white; font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem; outline: none; margin-bottom: 1rem; transition: border-color 0.15s;
-  }
+  input[type="password"], input[type="text"], input[type="date"] { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid rgba(45,74,42,0.22); border-radius: 4px; background: white; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; outline: none; margin-bottom: 1rem; transition: border-color 0.15s; }
   input:focus { border-color: var(--moss); }
-
-  /* BUTTONS */
   .btn { display: inline-block; padding: 0.65rem 1.2rem; background: var(--moss); color: white; border: none; border-radius: 5px; font-family: 'Source Sans 3', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; text-decoration: none; }
   .btn:hover { background: var(--moss-light); }
   .btn.secondary { background: var(--cream); color: var(--moss); border: 1px solid rgba(45,74,42,0.2); }
@@ -39,37 +29,25 @@
   .btn.danger { background: var(--rust); color: white; }
   .btn.danger:hover { opacity: 0.88; }
   .btn.small { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
-
-  /* ADMIN SHELL */
   .admin-wrap { display: none; }
   .admin-header { background: var(--moss); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
   .admin-header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: white; letter-spacing: 0.05em; }
   .logout { font-size: 0.78rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
-
-  /* TABS */
-  .tabs { display: flex; background: var(--moss-light); }
+  .tabs { display: flex; background: var(--moss-light); flex-wrap: wrap; }
   .tab { padding: 0.75rem 1.25rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; transition: all 0.15s; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
   .tab:hover { color: white; }
   .tab.active { color: white; border-bottom: 3px solid rgba(255,255,255,0.8); }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-
-  /* MAIN */
   .admin-main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
-
-  /* STATS */
   .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
   .stat-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 6px; padding: 0.9rem 1.25rem; flex: 1; min-width: 100px; }
   .stat-num { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--moss); font-weight: 700; line-height: 1; margin-bottom: 0.2rem; }
   .stat-label { font-size: 0.72rem; color: var(--fog); text-transform: uppercase; letter-spacing: 0.08em; }
-
-  /* CONTROLS */
   .controls { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
   .control-group { display: flex; flex-direction: column; gap: 0.25rem; }
   .control-group input { margin-bottom: 0; }
-
-  /* TABLE */
-  .table-wrap { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+  .table-wrap { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   thead { background: var(--moss); color: white; }
   thead th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; user-select: none; }
@@ -78,30 +56,23 @@
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: rgba(45,74,42,0.04); }
   tbody td { padding: 0.7rem 1rem; color: var(--ink); }
-  .date-cell { color: var(--fog); font-size: 0.82rem; }
+  .date-cell { color: var(--fog); font-size: 0.82rem; white-space: nowrap; }
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--fog); }
   .empty-state p { font-size: 0.9rem; margin-top: 0.5rem; }
-
-  /* EXPORT */
   .export-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-
-  /* ARTIST MGMT */
   .section-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.25rem; }
   .section-card h2 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; color: var(--moss); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
   .section-card p { font-size: 0.82rem; color: var(--fog); margin-bottom: 1.25rem; line-height: 1.5; }
   .add-artist-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: end; margin-bottom: 1.5rem; }
   .add-artist-row input { margin-bottom: 0; }
   .artist-list-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; font-size: 0.9rem; }
-  .artist-list-item.spp-item { background: rgba(45,74,42,0.08); color: var(--moss); font-style: normal; }
+  .artist-list-item.spp-item { background: rgba(45,74,42,0.08); color: var(--moss); }
   .artist-name { flex: 1; }
   .save-notice { display: none; background: rgba(45,110,62,0.1); color: var(--success); border-radius: 5px; padding: 0.6rem 1rem; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
-
-  /* SALES */
   .artist-breakdown-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; }
   .adr-name { font-weight: 600; color: var(--ink); font-size: 0.9rem; }
   .adr-sub { font-size: 0.75rem; color: var(--fog); margin-top: 0.1rem; }
   .adr-amount { color: var(--moss); font-weight: 700; font-size: 1rem; white-space: nowrap; margin-left: 1rem; }
-
   @media (max-width: 600px) {
     .controls { flex-direction: column; }
     .stats-bar { flex-direction: column; }
@@ -139,8 +110,8 @@
   <div class="tabs">
     <button class="tab active" id="tab-btn-signups" onclick="switchTab('signups', this)">Signups</button>
     <button class="tab" id="tab-btn-sales" onclick="switchTab('sales', this)">Sales</button>
-    <button class="tab" id="tab-btn-artists" onclick="switchTab('artists', this)">Manage Artists</button>
     <button class="tab" id="tab-btn-interested" onclick="switchTab('interested', this)">Artist Interest</button>
+    <button class="tab" id="tab-btn-artists" onclick="switchTab('artists', this)">Manage Artists</button>
   </div>
 
   <!-- SIGNUPS -->
@@ -193,9 +164,7 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>Date</th><th>Artist</th><th>Price</th><th>Artist gets</th><th>SPP keeps</th>
-          </tr></thead>
+          <thead><tr><th>Date</th><th>Artist</th><th>Price</th><th>Artist gets</th><th>SPP keeps</th></tr></thead>
           <tbody id="sales-tbody"></tbody>
         </table>
         <div class="empty-state" id="sales-empty" style="display:none"><strong>No sales yet</strong><p>Sales appear here after completed purchases.</p></div>
@@ -207,7 +176,29 @@
     </div>
   </div>
 
-  <!-- ARTISTS -->
+  <!-- ARTIST INTEREST -->
+  <div class="tab-content" id="tab-interested">
+    <div class="admin-main">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="interest-total">0</div><div class="stat-label">Interested artists</div></div>
+        <div class="stat-card"><div class="stat-num" id="interest-month">0</div><div class="stat-label">This month</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Location</th><th>Portfolio</th>
+          </tr></thead>
+          <tbody id="interest-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="interest-empty" style="display:none"><strong>No artist interest submissions yet</strong><p>Check back after artists submit through the interest page.</p></div>
+      </div>
+      <div class="export-row">
+        <button class="btn secondary" onclick="exportInterestCSV()">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE ARTISTS -->
   <div class="tab-content" id="tab-artists">
     <div class="admin-main">
       <div class="section-card">
@@ -225,36 +216,6 @@
       </div>
     </div>
   </div>
-  <!-- ARTIST INTEREST TAB -->
-  <div class="tab-content" id="tab-interested">
-    <div class="admin-main">
-      <div class="stats-bar">
-        <div class="stat-card"><div class="stat-num" id="interest-total">0</div><div class="stat-label">Interested artists</div></div>
-        <div class="stat-card"><div class="stat-num" id="interest-month">0</div><div class="stat-label">This month</div></div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Location</th>
-            <th>Portfolio</th>
-          </tr></thead>
-          <tbody id="interest-tbody"></tbody>
-        </table>
-        <div class="empty-state" id="interest-empty" style="display:none">
-          <strong>No artist interest submissions yet</strong>
-          <p>Check back after artists submit through the interest page.</p>
-        </div>
-      </div>
-      <div class="export-row" style="margin-top:1rem">
-        <button class="btn secondary" onclick="exportInterestCSV()">Export CSV</button>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -268,11 +229,7 @@ var SB_URL = 'https://vyjnyoropzkirzapjssc.supabase.co';
 var SB_KEY = 'sb_publishable_xAy7JBkovw65m8Vrzm_qGQ_4X-0DSXI';
 
 function sbHeaders() {
-  return {
-    'apikey': SB_KEY,
-    'Authorization': 'Bearer ' + SB_KEY,
-    'Content-Type': 'application/json'
-  };
+  return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
 }
 
 var allSignups = [];
@@ -285,7 +242,7 @@ function doLogin() {
   if (pw === PASS) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    loadSignups().then(function() {});
+    loadSignups().then(function(){});
     renderArtistList();
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -308,60 +265,14 @@ function switchTab(tab, btn) {
   if (tab === 'interested') loadInterested();
 }
 
-async function loadInterested() {
-  try {
-    var res = await fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbHeaders() });
-    var data = await res.json();
-    var now = new Date();
-    var month = data.filter(function(r) {
-      var d = new Date(r.created_at);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-    document.getElementById('interest-total').textContent = data.length;
-    document.getElementById('interest-month').textContent = month.length;
-    var tbody = document.getElementById('interest-tbody');
-    var empty = document.getElementById('interest-empty');
-    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    tbody.innerHTML = data.map(function(r) {
-      var d = new Date(r.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
-      return '<tr>' +
-        '<td class="date-cell">' + d + '</td>' +
-        '<td>' + esc(r.name||'') + '</td>' +
-        '<td>' + esc(r.email||'') + '</td>' +
-        '<td>' + esc(r.phone||'—') + '</td>' +
-        '<td>' + esc(r.location||'') + '</td>' +
-        '<td>' + (r.portfolio ? '<a href="' + esc(r.portfolio) + '" target="_blank" style="color:var(--moss)">' + esc(r.portfolio) + '</a>' : '—') + '</td>' +
-      '</tr>';
-    }).join('');
-  } catch(e) { console.error(e); }
-}
-
-function exportInterestCSV() {
-  fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbHeaders() })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var header = 'Date,Name,Email,Phone,Location,Portfolio,About Work
-';
-      var body = data.map(function(r) {
-        return [new Date(r.created_at).toLocaleString(), r.name, r.email, r.phone||'', r.location, r.portfolio||'', (r.medium||'').replace(/,/g,';')]
-          .map(function(v) { return '"' + String(v).replace(/"/g,'""') + '"'; }).join(',');
-      }).join('
-');
-      downloadCSV(header + body, 'SeaPonyPress_ArtistInterest_' + today() + '.csv');
-    });
-}
-
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── SIGNUPS ──
 async function loadSignups() {
   try {
-    const res = await fetch(SB_URL + '/rest/v1/signups?select=*&order=created_at.desc', { headers: sbHeaders() });
-    const data = await res.json();
-    allSignups = data.map(function(r) { return { date: r.created_at, name: r.name || '', email: r.email }; });
+    var res = await fetch(SB_URL + '/rest/v1/signups?select=*&order=created_at.desc', { headers: sbHeaders() });
+    var data = await res.json();
+    allSignups = data.map(function(r) { return { date: r.created_at, name: r.name||'', email: r.email }; });
   } catch(e) { allSignups = []; }
   applyFilters();
   updateSignupStats();
@@ -406,205 +317,164 @@ function sortBy(col) {
 }
 
 function sortData() {
-  filtered.sort(function(a, b) {
-    var av = a[sortCol] || '', bv = b[sortCol] || '';
-    return av < bv ? -sortDir : av > bv ? sortDir : 0;
-  });
+  filtered.sort(function(a,b) { var av=a[sortCol]||'',bv=b[sortCol]||''; return av<bv?-sortDir:av>bv?sortDir:0; });
   renderSignupTable();
 }
 
 function renderSignupTable() {
   var search = document.getElementById('filter-search').value.toLowerCase();
-  var rows = search ? filtered.filter(function(s) {
-    return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1;
-  }) : filtered;
+  var rows = search ? filtered.filter(function(s){ return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1; }) : filtered;
   document.getElementById('stat-filtered').textContent = rows.length;
   var tbody = document.getElementById('signup-tbody');
   var empty = document.getElementById('signup-empty');
-  if (rows.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  tbody.innerHTML = rows.map(function(s) {
-    var d = new Date(s.date);
-    var ds = d.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
-    var ts = d.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'});
-    return '<tr><td class="date-cell">' + ds + ' · ' + ts + '</td><td>' + esc(s.name||'—') + '</td><td>' + esc(s.email) + '</td></tr>';
+  if (rows.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=rows.map(function(s){
+    var d=new Date(s.date);
+    var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    var ts=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return '<tr><td class="date-cell">'+ds+' · '+ts+'</td><td>'+esc(s.name||'—')+'</td><td>'+esc(s.email)+'</td></tr>';
   }).join('');
 }
 
 function exportSignupsCSV() {
-  var rows = getSignupExportRows();
-  var header = 'Date,Name,Email\n';
-  var body = rows.map(function(s) {
-    return '"' + new Date(s.date).toLocaleString() + '","' + (s.name||'').replace(/"/g,'""') + '","' + s.email.replace(/"/g,'""') + '"';
-  }).join('\n');
-  downloadCSV(header + body, 'SeaPonyPress_Signups_' + today() + '.csv');
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s){ return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1; }) : filtered;
+  var header='Date,Name,Email\n';
+  var body=rows.map(function(s){ return '"'+new Date(s.date).toLocaleString()+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"'; }).join('\n');
+  downloadCSV(header+body,'SeaPonyPress_Signups_'+today()+'.csv');
 }
 
 function exportSignupsPDF() {
-  var rows = getSignupExportRows();
-  var win = window.open('', '_blank');
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s){ return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1; }) : filtered;
+  var win=window.open('','_blank');
   win.document.write('<html><head><title>Sea Pony Press Signups</title><style>body{font-family:Georgia,serif;padding:2rem;color:#1a1a18}h1{color:#2d4a2a;font-size:1.3rem;margin-bottom:.25rem}p{color:#7a8c76;font-size:.85rem;margin-bottom:1.5rem}table{width:100%;border-collapse:collapse;font-size:.88rem}th{background:#2d4a2a;color:white;padding:.5rem .75rem;text-align:left}td{padding:.5rem .75rem;border-bottom:1px solid #ede9e0}tr:nth-child(even){background:#f5f2ec}</style></head><body>');
-  win.document.write('<h1>Sea Pony Press Signups</h1><p>' + rows.length + ' subscribers · ' + new Date().toLocaleDateString() + '</p>');
+  win.document.write('<h1>Sea Pony Press Signups</h1><p>'+rows.length+' subscribers · '+new Date().toLocaleDateString()+'</p>');
   win.document.write('<table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
-  rows.forEach(function(s) {
-    var d = new Date(s.date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
-    win.document.write('<tr><td>' + d + '</td><td>' + (s.name||'—') + '</td><td>' + s.email + '</td></tr>');
-  });
+  rows.forEach(function(s){ var d=new Date(s.date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}); win.document.write('<tr><td>'+d+'</td><td>'+(s.name||'—')+'</td><td>'+s.email+'</td></tr>'); });
   win.document.write('</tbody></table></body></html>');
   win.document.close(); win.print();
 }
 
-function getSignupExportRows() {
-  var search = document.getElementById('filter-search').value.toLowerCase();
-  return search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
-}
-
 async function clearSignups() {
   if (confirm('Delete all signup data? Cannot be undone.')) {
-    await fetch(SB_URL + '/rest/v1/signups?id=gte.0', { method: 'DELETE', headers: sbHeaders() });
-    allSignups = []; filtered = [];
-    renderSignupTable(); updateSignupStats();
+    await fetch(SB_URL+'/rest/v1/signups?id=gte.0',{method:'DELETE',headers:sbHeaders()});
+    allSignups=[];filtered=[];renderSignupTable();updateSignupStats();
   }
 }
 
 // ── SALES ──
 async function loadSalesData() {
   try {
-    const res = await fetch(SB_URL + '/rest/v1/sales?select=*&order=created_at.desc', { headers: sbHeaders() });
-    const data = await res.json();
-    return data.map(function(r) {
-      return {
-        date: r.created_at,
-        items: [{ artist: r.artist, price: r.price, artistAmt: r.artist_amount, sppAmt: r.spp_amount, isSPP: r.artist_amount === 0 }]
-      };
-    });
-  } catch(e) { return []; }
+    var res=await fetch(SB_URL+'/rest/v1/sales?select=*&order=created_at.desc',{headers:sbHeaders()});
+    var data=await res.json();
+    return data.map(function(r){ return {date:r.created_at,items:[{artist:r.artist,price:r.price,artistAmt:r.artist_amount,sppAmt:r.spp_amount,isSPP:r.artist_amount===0}]}; });
+  } catch(e){ return []; }
 }
 
 async function renderSales() {
-  var sales = await loadSalesData();
-  var allItems = [];
-  sales.forEach(function(s) {
-    s.items.forEach(function(item) {
-      allItems.push(Object.assign({}, item, {date: s.date}));
-    });
-  });
-
-  var totalRev = allItems.reduce(function(sum,i) { return sum + i.price; }, 0);
-  var totalSPP = allItems.reduce(function(sum,i) { return sum + i.sppAmt; }, 0);
-  var totalArt = allItems.reduce(function(sum,i) { return sum + i.artistAmt; }, 0);
-
-  document.getElementById('sales-count').textContent = allItems.length;
-  document.getElementById('sales-revenue').textContent = '$' + totalRev.toFixed(2);
-  document.getElementById('sales-spp').textContent = '$' + totalSPP.toFixed(2);
-  document.getElementById('sales-artists').textContent = '$' + totalArt.toFixed(2);
-
-  var byArtist = {};
-  allItems.forEach(function(item) {
-    if (!item.isSPP) {
-      if (!byArtist[item.artist]) byArtist[item.artist] = {count:0, total:0, owed:0};
-      byArtist[item.artist].count++;
-      byArtist[item.artist].total += item.price;
-      byArtist[item.artist].owed += item.artistAmt;
-    }
-  });
-
-  var bd = document.getElementById('artist-breakdown');
-  var entries = Object.entries(byArtist).sort(function(a,b) { return b[1].owed - a[1].owed; });
-  if (entries.length === 0) {
-    bd.innerHTML = '<p style="color:var(--fog);font-size:.88rem;padding:.5rem 0">No artist sales yet.</p>';
-  } else {
-    bd.innerHTML = entries.map(function(e) {
-      return '<div class="artist-breakdown-row"><div><div class="adr-name">' + esc(e[0]) + '</div><div class="adr-sub">' + e[1].count + ' piece' + (e[1].count !== 1 ? 's' : '') + ' · $' + e[1].total.toFixed(2) + ' total</div></div><div class="adr-amount">$' + e[1].owed.toFixed(2) + ' owed</div></div>';
-    }).join('');
-  }
-
-  var tbody = document.getElementById('sales-tbody');
-  var empty = document.getElementById('sales-empty');
-  if (allItems.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  var sorted = allItems.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); });
-  tbody.innerHTML = sorted.map(function(item) {
-    var d = new Date(item.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    return '<tr><td class="date-cell">' + d + '</td><td>' + esc(item.artist) + '</td><td>$' + item.price.toFixed(2) + '</td><td>' + (item.isSPP ? '—' : '$' + item.artistAmt.toFixed(2)) + '</td><td>$' + item.sppAmt.toFixed(2) + '</td></tr>';
-  }).join('');
+  var sales=await loadSalesData();
+  var allItems=[];
+  sales.forEach(function(s){ s.items.forEach(function(item){ allItems.push(Object.assign({},item,{date:s.date})); }); });
+  var totalRev=allItems.reduce(function(sum,i){return sum+i.price;},0);
+  var totalSPP=allItems.reduce(function(sum,i){return sum+i.sppAmt;},0);
+  var totalArt=allItems.reduce(function(sum,i){return sum+i.artistAmt;},0);
+  document.getElementById('sales-count').textContent=allItems.length;
+  document.getElementById('sales-revenue').textContent='$'+totalRev.toFixed(2);
+  document.getElementById('sales-spp').textContent='$'+totalSPP.toFixed(2);
+  document.getElementById('sales-artists').textContent='$'+totalArt.toFixed(2);
+  var byArtist={};
+  allItems.forEach(function(item){ if(!item.isSPP){ if(!byArtist[item.artist])byArtist[item.artist]={count:0,total:0,owed:0}; byArtist[item.artist].count++;byArtist[item.artist].total+=item.price;byArtist[item.artist].owed+=item.artistAmt; } });
+  var bd=document.getElementById('artist-breakdown');
+  var entries=Object.entries(byArtist).sort(function(a,b){return b[1].owed-a[1].owed;});
+  if(entries.length===0){bd.innerHTML='<p style="color:var(--fog);font-size:.88rem;padding:.5rem 0">No artist sales yet.</p>';}
+  else{bd.innerHTML=entries.map(function(e){return '<div class="artist-breakdown-row"><div><div class="adr-name">'+esc(e[0])+'</div><div class="adr-sub">'+e[1].count+' piece'+(e[1].count!==1?'s':'')+' · $'+e[1].total.toFixed(2)+' total</div></div><div class="adr-amount">$'+e[1].owed.toFixed(2)+' owed</div></div>';}).join('');}
+  var tbody=document.getElementById('sales-tbody');
+  var empty=document.getElementById('sales-empty');
+  if(allItems.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=allItems.sort(function(a,b){return new Date(b.date)-new Date(a.date);}).map(function(item){var d=new Date(item.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});return '<tr><td class="date-cell">'+d+'</td><td>'+esc(item.artist)+'</td><td>$'+item.price.toFixed(2)+'</td><td>'+(item.isSPP?'—':'$'+item.artistAmt.toFixed(2))+'</td><td>$'+item.sppAmt.toFixed(2)+'</td></tr>';}).join('');
 }
 
-async function exportSalesCSV() {
-  var sales = await loadSalesData();
-  var allItems = [];
-  sales.forEach(function(s) { s.items.forEach(function(i) { allItems.push(Object.assign({},i,{date:s.date})); }); });
-  var header = 'Date,Artist,Sale Price,Artist Gets,SPP Keeps\n';
-  var body = allItems.map(function(i) {
-    return '"' + new Date(i.date).toLocaleString() + '","' + i.artist + '",' + i.price.toFixed(2) + ',' + i.artistAmt.toFixed(2) + ',' + i.sppAmt.toFixed(2);
-  }).join('\n');
-  downloadCSV(header + body, 'SeaPonyPress_Sales_' + today() + '.csv');
+function exportSalesCSV() {
+  loadSalesData().then(function(sales){
+    var allItems=[];sales.forEach(function(s){s.items.forEach(function(i){allItems.push(Object.assign({},i,{date:s.date}));});});
+    var header='Date,Artist,Sale Price,Artist Gets,SPP Keeps\n';
+    var body=allItems.map(function(i){return '"'+new Date(i.date).toLocaleString()+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n');
+    downloadCSV(header+body,'SeaPonyPress_Sales_'+today()+'.csv');
+  });
 }
 
 async function clearSales() {
-  if (confirm('Delete all sales data? Cannot be undone.')) {
-    await fetch(SB_URL + '/rest/v1/sales?id=gte.0', { method: 'DELETE', headers: sbHeaders() });
-    renderSales();
-  }
+  if(confirm('Delete all sales data? Cannot be undone.')){await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbHeaders()});renderSales();}
 }
 
-// ── ARTISTS ──
+// ── ARTIST INTEREST ──
+async function loadInterested() {
+  try {
+    var res=await fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbHeaders()});
+    var data=await res.json();
+    var now=new Date();
+    var month=data.filter(function(r){var d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+    document.getElementById('interest-total').textContent=data.length;
+    document.getElementById('interest-month').textContent=month.length;
+    var tbody=document.getElementById('interest-tbody');
+    var empty=document.getElementById('interest-empty');
+    if(data.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none';
+    tbody.innerHTML=data.map(function(r){
+      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return '<tr><td class="date-cell">'+d+'</td><td>'+esc(r.name||'')+'</td><td>'+esc(r.email||'')+'</td><td>'+esc(r.phone||'—')+'</td><td>'+esc(r.location||'')+'</td><td>'+(r.portfolio?'<a href="'+esc(r.portfolio)+'" target="_blank" style="color:var(--moss)">link</a>':'—')+'</td></tr>';
+    }).join('');
+  } catch(e){console.error(e);}
+}
+
+function exportInterestCSV() {
+  fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbHeaders()}).then(function(r){return r.json();}).then(function(data){
+    var header='Date,Name,Email,Phone,Location,Portfolio,About Work\n';
+    var body=data.map(function(r){return [new Date(r.created_at).toLocaleString(),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    downloadCSV(header+body,'SeaPonyPress_ArtistInterest_'+today()+'.csv');
+  });
+}
+
+// ── MANAGE ARTISTS ──
 function getArtists() {
-  try { return JSON.parse(localStorage.getItem(ARTISTS_KEY) || JSON.stringify(DEFAULT_ARTISTS)); }
-  catch(e) { return DEFAULT_ARTISTS.slice(); }
+  try{return JSON.parse(localStorage.getItem(ARTISTS_KEY)||JSON.stringify(DEFAULT_ARTISTS));}catch(e){return DEFAULT_ARTISTS.slice();}
 }
 
 function saveArtists(artists) {
-  localStorage.setItem(ARTISTS_KEY, JSON.stringify(artists));
-  var n = document.getElementById('save-notice');
-  n.style.display = 'block';
-  setTimeout(function() { n.style.display = 'none'; }, 3000);
+  localStorage.setItem(ARTISTS_KEY,JSON.stringify(artists));
+  var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000);
 }
 
 function renderArtistList() {
-  var artists = getArtists();
-  var html = artists.map(function(a, i) {
-    return '<div class="artist-list-item"><span class="artist-name">' + esc(a.name) + '</span><button class="btn danger small" onclick="removeArtist(' + i + ')">Remove</button></div>';
-  }).join('');
-  html += '<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (Full donation) — always included</span></div>';
-  document.getElementById('artist-list').innerHTML = html;
+  var artists=getArtists();
+  var html=artists.map(function(a,i){return '<div class="artist-list-item"><span class="artist-name">'+esc(a.name)+'</span><button class="btn danger small" onclick="removeArtist('+i+')">Remove</button></div>';}).join('');
+  html+='<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (Full donation) — always included</span></div>';
+  document.getElementById('artist-list').innerHTML=html;
 }
 
 function addArtist() {
-  var input = document.getElementById('new-artist');
-  var name = input.value.trim();
-  if (!name) return;
-  var artists = getArtists();
-  if (artists.find(function(a) { return a.name.toLowerCase() === name.toLowerCase(); })) {
-    alert('That artist is already in the list.'); return;
-  }
-  artists.push({name: name});
-  saveArtists(artists);
-  renderArtistList();
-  input.value = '';
+  var input=document.getElementById('new-artist');
+  var name=input.value.trim();
+  if(!name)return;
+  var artists=getArtists();
+  if(artists.find(function(a){return a.name.toLowerCase()===name.toLowerCase();})){alert('That artist is already in the list.');return;}
+  artists.push({name:name});saveArtists(artists);renderArtistList();input.value='';
 }
 
 function removeArtist(index) {
-  var artists = getArtists();
-  if (confirm('Remove ' + artists[index].name + '?')) {
-    artists.splice(index, 1);
-    saveArtists(artists);
-    renderArtistList();
-  }
+  var artists=getArtists();
+  if(confirm('Remove '+artists[index].name+'?')){artists.splice(index,1);saveArtists(artists);renderArtistList();}
 }
 
 // ── UTILS ──
-function downloadCSV(content, filename) {
-  var blob = new Blob([content], {type: 'text/csv'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+function downloadCSV(content,filename) {
+  var blob=new Blob([content],{type:'text/csv'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
 }
 
-function today() {
-  return new Date().toISOString().split('T')[0];
-}
+function today() { return new Date().toISOString().split('T')[0]; }
 </script>
 </body>
 </html>
