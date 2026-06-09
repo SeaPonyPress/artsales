@@ -139,7 +139,8 @@
   <div class="tabs">
     <button class="tab active" id="tab-btn-signups" onclick="switchTab('signups', this)">Signups</button>
     <button class="tab" id="tab-btn-sales" onclick="switchTab('sales', this)">Sales</button>
-    <button class="tab" id="tab-btn-artists" onclick="switchTab('artists', this)">Artists</button>
+    <button class="tab" id="tab-btn-artists" onclick="switchTab('artists', this)">Manage Artists</button>
+    <button class="tab" id="tab-btn-interested" onclick="switchTab('interested', this)">Artist Interest</button>
   </div>
 
   <!-- SIGNUPS -->
@@ -224,6 +225,36 @@
       </div>
     </div>
   </div>
+  <!-- ARTIST INTEREST TAB -->
+  <div class="tab-content" id="tab-interested">
+    <div class="admin-main">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="interest-total">0</div><div class="stat-label">Interested artists</div></div>
+        <div class="stat-card"><div class="stat-num" id="interest-month">0</div><div class="stat-label">This month</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Location</th>
+            <th>Portfolio</th>
+          </tr></thead>
+          <tbody id="interest-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="interest-empty" style="display:none">
+          <strong>No artist interest submissions yet</strong>
+          <p>Check back after artists submit through the interest page.</p>
+        </div>
+      </div>
+      <div class="export-row" style="margin-top:1rem">
+        <button class="btn secondary" onclick="exportInterestCSV()">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -274,6 +305,51 @@ function switchTab(tab, btn) {
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'sales') renderSales();
   if (tab === 'artists') renderArtistList();
+  if (tab === 'interested') loadInterested();
+}
+
+async function loadInterested() {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbHeaders() });
+    var data = await res.json();
+    var now = new Date();
+    var month = data.filter(function(r) {
+      var d = new Date(r.created_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    document.getElementById('interest-total').textContent = data.length;
+    document.getElementById('interest-month').textContent = month.length;
+    var tbody = document.getElementById('interest-tbody');
+    var empty = document.getElementById('interest-empty');
+    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map(function(r) {
+      var d = new Date(r.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+      return '<tr>' +
+        '<td class="date-cell">' + d + '</td>' +
+        '<td>' + esc(r.name||'') + '</td>' +
+        '<td>' + esc(r.email||'') + '</td>' +
+        '<td>' + esc(r.phone||'—') + '</td>' +
+        '<td>' + esc(r.location||'') + '</td>' +
+        '<td>' + (r.portfolio ? '<a href="' + esc(r.portfolio) + '" target="_blank" style="color:var(--moss)">' + esc(r.portfolio) + '</a>' : '—') + '</td>' +
+      '</tr>';
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function exportInterestCSV() {
+  fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbHeaders() })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var header = 'Date,Name,Email,Phone,Location,Portfolio,About Work
+';
+      var body = data.map(function(r) {
+        return [new Date(r.created_at).toLocaleString(), r.name, r.email, r.phone||'', r.location, r.portfolio||'', (r.medium||'').replace(/,/g,';')]
+          .map(function(v) { return '"' + String(v).replace(/"/g,'""') + '"'; }).join(',');
+      }).join('
+');
+      downloadCSV(header + body, 'SeaPonyPress_ArtistInterest_' + today() + '.csv');
+    });
 }
 
 function esc(s) {
