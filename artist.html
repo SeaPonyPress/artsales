@@ -457,10 +457,10 @@ async function handleSubmit() {
     document.getElementById('success-msg').style.display = 'block';
 
   } catch(e) {
-    console.error(e);
+    console.error('Full error:', e);
     btn.disabled = false;
     btn.textContent = 'Submit Interest';
-    alert('Something went wrong — please try again or email info@sitkawild.org');
+    alert('Error: ' + e.message + ' — please screenshot this and email info@sitkawild.org');
   }
 }
 </script>
