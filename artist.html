@@ -452,15 +452,11 @@ async function handleSubmit() {
     // 3. Send emails via EmailJS
     const emailRes = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       to_name: name,
-      to_email: email,
-      artist_phone: phone || 'Not provided',
-      artist_location: location,
-      artist_portfolio: portfolio || 'Not provided',
-      artist_medium: medium,
-      reply_to: 'info@sitkawild.org'
+      to_email: email
     });
+    console.log('EmailJS response:', emailRes);
     if (emailRes.status !== 200) {
-      throw new Error('EmailJS error ' + emailRes.status + ': ' + emailRes.text);
+      throw new Error('EmailJS error ' + emailRes.status + ': ' + JSON.stringify(emailRes));
     }
 
     // Show success
