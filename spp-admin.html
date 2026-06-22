@@ -264,17 +264,42 @@ function switchTab(tab, btn) {
 
 async function loadMetrics() {
   try {
+    // Get archived totals
     var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbHeaders()});
     var data = await res.json();
-    if (data.length > 0) {
-      var m = data[0];
-      document.getElementById('m-signups').textContent = m.total_signups || 0;
-      document.getElementById('m-sales').textContent = m.total_sales || 0;
-      document.getElementById('m-revenue').textContent = '$'+parseFloat(m.total_revenue||0).toFixed(2);
-      document.getElementById('m-spp').textContent = '$'+parseFloat(m.total_spp||0).toFixed(2);
-      document.getElementById('m-artists-amt').textContent = '$'+parseFloat(m.total_artist_amount||0).toFixed(2);
-      document.getElementById('m-interest').textContent = m.total_artist_interest || 0;
-    }
+    var m = data.length > 0 ? data[0] : {};
+    var archivedSignups = parseInt(m.total_signups||0);
+    var archivedSales = parseInt(m.total_sales||0);
+    var archivedRevenue = parseFloat(m.total_revenue||0);
+    var archivedSPP = parseFloat(m.total_spp||0);
+    var archivedArtist = parseFloat(m.total_artist_amount||0);
+    var archivedInterest = parseInt(m.total_artist_interest||0);
+
+    // Get current live signups
+    var sRes = await fetch(SB_URL+'/rest/v1/signups?select=id', {headers:sbHeaders()});
+    var sData = await sRes.json();
+    var liveSignups = Array.isArray(sData) ? sData.length : 0;
+
+    // Get current live sales
+    var salRes = await fetch(SB_URL+'/rest/v1/sales?select=price,artist_amount,spp_amount', {headers:sbHeaders()});
+    var salData = await salRes.json();
+    var liveSales = Array.isArray(salData) ? salData.length : 0;
+    var liveRevenue = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.price||0);},0) : 0;
+    var liveSPP = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.spp_amount||0);},0) : 0;
+    var liveArtist = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.artist_amount||0);},0) : 0;
+
+    // Get current live artist interest
+    var aRes = await fetch(SB_URL+'/rest/v1/artists?select=id', {headers:sbHeaders()});
+    var aData = await aRes.json();
+    var liveInterest = Array.isArray(aData) ? aData.length : 0;
+
+    // Display combined totals
+    document.getElementById('m-signups').textContent = archivedSignups + liveSignups;
+    document.getElementById('m-sales').textContent = archivedSales + liveSales;
+    document.getElementById('m-revenue').textContent = '$'+(archivedRevenue + liveRevenue).toFixed(2);
+    document.getElementById('m-spp').textContent = '$'+(archivedSPP + liveSPP).toFixed(2);
+    document.getElementById('m-artists-amt').textContent = '$'+(archivedArtist + liveArtist).toFixed(2);
+    document.getElementById('m-interest').textContent = archivedInterest + liveInterest;
   } catch(e) { console.error(e); }
 }
 
