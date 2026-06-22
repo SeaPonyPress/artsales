@@ -545,17 +545,16 @@
 })();
 
 const DEFAULT_ARTISTS = [
-  { name: "Bethany Goodrich" },
-  { name: "Rebecca Danon / Ursa Prints" },
+  { name: "Bethany Goodrich", sppPct: 20 },
+  { name: "Rebecca Danon / Ursa Prints", sppPct: 20 },
 ];
 
 function getArtists() {
   try {
     const raw = localStorage.getItem('spp_artists');
-    const stored = raw ? JSON.parse(raw) : DEFAULT_ARTISTS;
-    return [...stored, { name: 'Sea Pony Press (Full donation)' }];
+    return raw ? JSON.parse(raw) : DEFAULT_ARTISTS.map(a => ({...a}));
   } catch(e) {
-    return [...DEFAULT_ARTISTS, { name: 'Sea Pony Press (Full donation)' }];
+    return DEFAULT_ARTISTS.map(a => ({...a}));
   }
 }
 
@@ -607,16 +606,14 @@ function getOrderData() {
     const artist = document.getElementById('a-' + id) ? document.getElementById('a-' + id).value : '';
     const price = parseFloat(document.getElementById('p-' + id) ? document.getElementById('p-' + id).value : '');
     if (artist && !isNaN(price) && price > 0) {
-      if (artist === 'Sea Pony Press (Full donation)') {
-        sppTotal += price; grand += price;
-        noteLines.push('SPP artwork $' + price.toFixed(2));
-      } else {
-        const artistAmt = price * (1 - SPP_PCT);
-        const sppAmt = price * SPP_PCT;
-        artistBreakdown[artist] = (artistBreakdown[artist] || 0) + artistAmt;
-        sppTotal += sppAmt; grand += price;
-        noteLines.push(artist + ' $' + artistAmt.toFixed(2));
-      }
+      const artistsList = getArtists();
+      const artistObj = artistsList.find(function(a){ return a.name === artist; });
+      const sPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20;
+      const artistAmt = price * (1 - sPct/100);
+      const sppAmt = price * (sPct/100);
+      artistBreakdown[artist] = (artistBreakdown[artist] || 0) + artistAmt;
+      sppTotal += sppAmt; grand += price;
+      noteLines.push(artist + ' $' + artistAmt.toFixed(2));
     }
   });
   return { grand, artistBreakdown, sppTotal, note: 'SPP art sale: ' + noteLines.join(', ') + ' | SPP keeps $' + sppTotal.toFixed(2) };
@@ -633,21 +630,21 @@ function recalc() {
     if (!artistEl || !priceEl) return;
     const artist = artistEl.value;
     const price = parseFloat(priceEl.value);
-    const isSPP = artist === 'Sea Pony Press (Full donation)';
+    const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20; const isSPP = sppPct === 100;
     if (artist && !isNaN(price) && price > 0) {
       sp.style.display = 'block';
       if (isSPP) {
-        document.getElementById('al-' + id).textContent = 'Full donation to Sea Pony Press';
+        document.getElementById('al-' + id).textContent = '100% supports Sea Pony Press';
         document.getElementById('aa-' + id).textContent = '$' + price.toFixed(2);
         document.getElementById('sa-' + id).textContent = '';
         document.getElementById('sa-' + id).parentElement.style.display = 'none';
         sppTotal += price; grand += price;
-        noteLines.push('SPP artwork $' + price.toFixed(2));
+        noteLines.push(artist + ' $' + price.toFixed(2) + ' (100% SPP)');
       } else {
         const artistAmt = price * (1 - SPP_PCT);
         const sppAmt = price * SPP_PCT;
         document.getElementById('sa-' + id).parentElement.style.display = 'flex';
-        document.getElementById('al-' + id).textContent = 'To artist (80%)';
+        document.getElementById('al-' + id).textContent = 'To artist (' + (100-sppPct) + '%)';
         document.getElementById('aa-' + id).textContent = '$' + artistAmt.toFixed(2);
         document.getElementById('sa-' + id).textContent = '$' + sppAmt.toFixed(2);
         artistBreakdown[artist] = (artistBreakdown[artist] || 0) + artistAmt;
@@ -745,7 +742,7 @@ async function saveSalesRecord() {
       const artist = artistEl.value;
       const price = parseFloat(priceEl.value);
       if (artist && !isNaN(price) && price > 0) {
-        const isSPP = artist === 'Sea Pony Press (Full donation)';
+        const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20; const isSPP = sppPct === 100;
         items.push({
           artist: artist,
           price: price,
