@@ -98,6 +98,7 @@
     <button class="tab" onclick="switchTab('sales',this)">Sales</button>
     <button class="tab" onclick="switchTab('interested',this)">Artist Interest</button>
     <button class="tab" onclick="switchTab('artists',this)">Manage Artists</button>
+    <button class="tab" onclick="switchTab('metrics',this)">All-Time Metrics</button>
   </div>
 
   <!-- SIGNUPS -->
@@ -201,6 +202,24 @@
       </div>
     </div>
   </div>
+  <!-- METRICS -->
+  <div class="tab-content" id="tab-metrics">
+    <div class="admin-main">
+      <div class="section-card">
+        <h2>All-Time Metrics</h2>
+        <p>These numbers are permanent and never reset when Kylee clears monthly data.</p>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="m-signups">0</div><div class="stat-label">Total signups</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-sales">0</div><div class="stat-label">Total sales</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-revenue">/bin/sh</div><div class="stat-label">Total revenue</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-spp">/bin/sh</div><div class="stat-label">Total to SPP</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-artists-amt">/bin/sh</div><div class="stat-label">Total to artists</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-interest">0</div><div class="stat-label">Artist inquiries</div></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -240,6 +259,49 @@ function switchTab(tab, btn) {
   if (tab==='sales') renderSales();
   if (tab==='artists') renderArtistList();
   if (tab==='interested') loadInterested();
+  if (tab==='metrics') loadMetrics();
+}
+
+async function loadMetrics() {
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbHeaders()});
+    var data = await res.json();
+    if (data.length > 0) {
+      var m = data[0];
+      document.getElementById('m-signups').textContent = m.total_signups || 0;
+      document.getElementById('m-sales').textContent = m.total_sales || 0;
+      document.getElementById('m-revenue').textContent = '$'+parseFloat(m.total_revenue||0).toFixed(2);
+      document.getElementById('m-spp').textContent = '$'+parseFloat(m.total_spp||0).toFixed(2);
+      document.getElementById('m-artists-amt').textContent = '$'+parseFloat(m.total_artist_amount||0).toFixed(2);
+      document.getElementById('m-interest').textContent = m.total_artist_interest || 0;
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function saveMetricsSnapshot(type, data) {
+  // Get current metrics
+  var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbHeaders()});
+  var existing = await res.json();
+  var m = existing.length > 0 ? existing[0] : {total_sales:0,total_revenue:0,total_spp:0,total_artist_amount:0,total_signups:0,total_artist_interest:0};
+
+  if (type === 'sales') {
+    m.total_sales = (m.total_sales||0) + data.count;
+    m.total_revenue = (m.total_revenue||0) + data.revenue;
+    m.total_spp = (m.total_spp||0) + data.spp;
+    m.total_artist_amount = (m.total_artist_amount||0) + data.artist;
+  } else if (type === 'signups') {
+    m.total_signups = (m.total_signups||0) + data.count;
+  } else if (type === 'interest') {
+    m.total_artist_interest = (m.total_artist_interest||0) + data.count;
+  }
+
+  // Upsert metrics
+  delete m.id; delete m.created_at;
+  await fetch(SB_URL+'/rest/v1/metrics', {
+    method: 'POST',
+    headers: Object.assign({}, sbHeaders(), {'Prefer': 'resolution=merge-duplicates'}),
+    body: JSON.stringify(m)
+  });
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -328,6 +390,7 @@ function exportSignupsPDF() {
 
 async function clearSignups() {
   if(confirm('Delete ALL signup data? Cannot be undone.')) {
+    await saveMetricsSnapshot('signups', {count: allSignups.length});
     await fetch(SB_URL+'/rest/v1/signups?id=gte.0',{method:'DELETE',headers:sbHeaders()});
     allSignups=[];filtered=[];renderSignupTable();updateSignupStats();
   }
@@ -373,7 +436,17 @@ function exportSalesCSV() {
 }
 
 async function clearSales() {
-  if(confirm('Delete ALL sales data? Cannot be undone.')){await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbHeaders()});renderSales();}
+  if(confirm('Delete ALL sales data? Cannot be undone.')) {
+    var sales = await loadSalesData();
+    var allItems = [];
+    sales.forEach(function(s){s.items.forEach(function(i){allItems.push(i);});});
+    var totalRev = allItems.reduce(function(sum,i){return sum+i.price;},0);
+    var totalSPP = allItems.reduce(function(sum,i){return sum+i.sppAmt;},0);
+    var totalArt = allItems.reduce(function(sum,i){return sum+i.artistAmt;},0);
+    await saveMetricsSnapshot('sales', {count:allItems.length, revenue:totalRev, spp:totalSPP, artist:totalArt});
+    await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbHeaders()});
+    renderSales();
+  }
 }
 
 // ARTIST INTEREST
@@ -415,9 +488,27 @@ function getArtists() { try{return JSON.parse(localStorage.getItem(ARTISTS_KEY)|
 function saveArtists(artists) { localStorage.setItem(ARTISTS_KEY,JSON.stringify(artists)); var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000); }
 function renderArtistList() {
   var artists=getArtists();
-  var html=artists.map(function(a,i){return '<div class="artist-list-item"><span class="artist-name">'+esc(a.name)+'</span><button class="btn danger small" onclick="removeArtist('+i+')">Remove</button></div>';}).join('');
-  html+='<div class="artist-list-item spp-item"><span class="artist-name">Sea Pony Press (Full donation) — always included</span></div>';
+  var html=artists.map(function(a,i){
+    var sppPct = a.sppPct !== undefined ? a.sppPct : 20;
+    return '<div class="artist-list-item" style="flex-wrap:wrap;gap:0.5rem;align-items:center">' +
+      '<span class="artist-name">'+esc(a.name)+'</span>' +
+      '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;white-space:nowrap">' +
+        '<span style="color:var(--fog)">SPP gets</span>' +
+        '<input type="number" min="0" max="100" value="'+sppPct+'" onchange="updateSppPct('+i+',this.value)" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
+        '<span style="color:var(--fog)">%</span>' +
+      '</label>' +
+      '<button class="btn danger small" onclick="removeArtist('+i+')">Remove</button>' +
+    '</div>';
+  }).join('');
   document.getElementById('artist-list').innerHTML=html;
+}
+
+function updateSppPct(index, value) {
+  var artists=getArtists();
+  var pct = Math.min(100, Math.max(0, parseInt(value)||20));
+  artists[index].sppPct = pct;
+  artists[index].fullDonation = pct === 100;
+  saveArtists(artists);
 }
 function addArtist() {
   var input=document.getElementById('new-artist'), name=input.value.trim();
