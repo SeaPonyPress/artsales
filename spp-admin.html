@@ -511,7 +511,7 @@ function exportInterestCSV() {
 // MANAGE ARTISTS
 async function getArtistsFromDB() {
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artists_list?select=*&order=id.asc', {headers:sbHeaders()});
+    var res = await fetch(SB_URL+'/rest/v1/artist_list?select=*&order=id.asc', {headers:sbHeaders()});
     var data = await res.json();
     if (Array.isArray(data) && data.length > 0) return data;
     return DEFAULT_ARTISTS.map(function(a){return {name:a.name, spp_pct:a.sppPct||20};});
@@ -555,7 +555,7 @@ async function addArtist() {
   var artists=await getArtistsFromDB();
   if(artists.find(function(a){return a.name.toLowerCase()===name.toLowerCase();})){alert('Already in list.');return;}
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artists_list', {
+    var res = await fetch(SB_URL+'/rest/v1/artist_list', {
       method: 'POST',
       headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
       body: JSON.stringify({name:name, spp_pct:20})
@@ -574,7 +574,7 @@ async function addArtist() {
 }
 async function removeArtist(id) {
   if(confirm('Remove this artist?')) {
-    await fetch(SB_URL+'/rest/v1/artists_list?id=eq.'+id, {method:'DELETE', headers:sbHeaders()});
+    await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {method:'DELETE', headers:sbHeaders()});
     renderArtistList();
   }
 }
