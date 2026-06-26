@@ -542,13 +542,23 @@ async function renderArtistList() {
   document.getElementById('artist-list').innerHTML = html;
 }
 
-function updateSppPct(index, value) {
-  var artists=getArtists();
-  var pct = Math.min(100, Math.max(0, parseInt(value)||20));
-  artists[index].sppPct = pct;
-  artists[index].fullDonation = pct === 100;
-  saveArtists(artists);
+function 
+async function updateSppPct(id) {
+  var input = document.getElementById('pct-'+id);
+  if (!input) { alert('Could not find input'); return; }
+  var pct = Math.min(100, Math.max(0, parseInt(input.value)||20));
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {
+      method: 'PATCH',
+      headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
+      body: JSON.stringify({spp_pct: pct})
+    });
+    if (!res.ok) { var err = await res.text(); alert('Error: ' + err); return; }
+    showSaveNotice();
+    renderArtistList();
+  } catch(e) { alert('Network error: ' + e.message); }
 }
+
 async function addArtist() {
   var input=document.getElementById('new-artist'), name=input.value.trim();
   if(!name)return;
