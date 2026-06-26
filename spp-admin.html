@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --ink: #1a1a18; --paper: #f5f2ec; --cream: #ede9e0; --moss: #2d4a2a; --moss-light: #3d6438; --fog: #7a8c76; --warm-white: #faf8f4; --rust: #8b3a1e; --success: #2d6e3e; --light-moss: #eaf0e8; }
+  :root { --ink: #1a1a18; --paper: #f5f2ec; --cream: #ede9e0; --moss: #2d4a2a; --moss-light: #3d6438; --fog: #7a8c76; --warm-white: #faf8f4; --rust: #8b3a1e; --success: #2d6e3e; }
   body { background: var(--paper); color: var(--ink); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; }
   .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .login-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.2); border-radius: 8px; padding: 2.5rem; width: 100%; max-width: 340px; text-align: center; }
@@ -27,7 +27,7 @@
   .admin-header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: white; letter-spacing: 0.05em; }
   .logout { font-size: 0.78rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
   .tabs { display: flex; background: var(--moss-light); flex-wrap: wrap; }
-  .tab { padding: 0.75rem 1.25rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
+  .tab { padding: 0.75rem 1.1rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.82rem; font-weight: 600; border-bottom: 3px solid transparent; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
   .tab:hover { color: white; }
   .tab.active { color: white; border-bottom: 3px solid rgba(255,255,255,0.8); }
   .tab-content { display: none; }
@@ -44,23 +44,20 @@
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   thead { background: var(--moss); color: white; }
   thead th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; white-space: nowrap; }
-  thead th:hover { background: var(--moss-light); cursor: pointer; }
   tbody tr { border-bottom: 1px solid rgba(45,74,42,0.08); }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: rgba(45,74,42,0.04); }
   tbody td { padding: 0.7rem 1rem; color: var(--ink); }
   .date-cell { color: var(--fog); font-size: 0.82rem; white-space: nowrap; }
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--fog); }
-  .empty-state p { font-size: 0.9rem; margin-top: 0.5rem; }
   .export-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
   .section-card { background: var(--warm-white); border: 1px solid rgba(45,74,42,0.15); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.25rem; }
   .section-card h2 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; color: var(--moss); margin-bottom: 0.4rem; }
   .section-card p { font-size: 0.82rem; color: var(--fog); margin-bottom: 1.25rem; line-height: 1.5; }
   .add-artist-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: end; margin-bottom: 1.5rem; }
   .add-artist-row input { margin-bottom: 0; }
-  .artist-list-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; font-size: 0.9rem; }
-  .artist-list-item.spp-item { background: rgba(45,74,42,0.08); color: var(--moss); }
-  .artist-name { flex: 1; }
+  .artist-list-item { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .artist-name { flex: 1; min-width: 150px; }
   .save-notice { display: none; background: rgba(45,110,62,0.1); color: var(--success); border-radius: 5px; padding: 0.6rem 1rem; font-size: 0.85rem; margin-top: 1rem; text-align: center; }
   .artist-breakdown-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--cream); border-radius: 5px; margin-bottom: 0.5rem; }
   .adr-name { font-weight: 600; color: var(--ink); font-size: 0.9rem; }
@@ -71,7 +68,7 @@
     .stats-bar { flex-direction: column; }
     .add-artist-row { grid-template-columns: 1fr; }
     .admin-main { padding: 1rem 0.85rem 3rem; }
-    .tab { padding: 0.65rem 0.85rem; font-size: 0.78rem; }
+    .tab { padding: 0.6rem 0.7rem; font-size: 0.75rem; }
   }
 </style>
 </head>
@@ -147,7 +144,7 @@
       </div>
       <div class="section-card">
         <h2>By Artist</h2>
-        <p>Running totals — use for quarterly payouts.</p>
+        <p>Running totals for quarterly payouts.</p>
         <div id="artist-breakdown"></div>
       </div>
       <div class="table-wrap">
@@ -189,19 +186,20 @@
     <div class="admin-main">
       <div class="section-card">
         <h2>Manage Artist List</h2>
-        <p>Add or remove artists from the purchase dropdown. Changes are live immediately.</p>
+        <p>Add or remove artists from the purchase dropdown. Changes are live across all devices immediately.</p>
         <div class="add-artist-row">
           <div>
             <label class="field-label">Add new artist</label>
-            <input type="text" id="new-artist" placeholder="e.g. Grace Kelley / Sundew Print" onkeydown="if(event.key==='Enter')addArtist()">
+            <input type="text" id="new-artist" placeholder="e.g. Elizabeth Younce" onkeydown="if(event.key==='Enter')addArtist()">
           </div>
           <button class="btn" onclick="addArtist()">Add</button>
         </div>
         <div id="artist-list"></div>
-        <div class="save-notice" id="save-notice">Artist list updated — live on the page</div>
+        <div class="save-notice" id="save-notice">✓ Saved successfully</div>
       </div>
     </div>
   </div>
+
   <!-- METRICS -->
   <div class="tab-content" id="tab-metrics">
     <div class="admin-main">
@@ -212,26 +210,24 @@
       <div class="stats-bar">
         <div class="stat-card"><div class="stat-num" id="m-signups">0</div><div class="stat-label">Total signups</div></div>
         <div class="stat-card"><div class="stat-num" id="m-sales">0</div><div class="stat-label">Total sales</div></div>
-        <div class="stat-card"><div class="stat-num" id="m-revenue">/bin/sh</div><div class="stat-label">Total revenue</div></div>
-        <div class="stat-card"><div class="stat-num" id="m-spp">/bin/sh</div><div class="stat-label">Total to SPP</div></div>
-        <div class="stat-card"><div class="stat-num" id="m-artists-amt">/bin/sh</div><div class="stat-label">Total to artists</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-revenue">$0.00</div><div class="stat-label">Total revenue</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-spp">$0.00</div><div class="stat-label">Total to SPP</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-artists-amt">$0.00</div><div class="stat-label">Total to artists</div></div>
         <div class="stat-card"><div class="stat-num" id="m-interest">0</div><div class="stat-label">Artist inquiries</div></div>
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
 var PASS = 'SeaPony2026!';
-var ARTISTS_KEY = 'spp_artists';
-var DEFAULT_ARTISTS = [{name:'Bethany Goodrich'},{name:'Rebecca Danon / Ursa Prints'}];
 var SB_URL = 'https://vyjnyoropzkirzapjssc.supabase.co';
 var SB_KEY = 'sb_publishable_xAy7JBkovw65m8Vrzm_qGQ_4X-0DSXI';
+var allSignups = [], filtered = [], sortCol = 'date', sortDir = -1;
 
-function sbHeaders() { return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}; }
-
-var allSignups=[], filtered=[], sortCol='date', sortDir=-1;
+function sbH() {
+  return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+}
 
 function doLogin() {
   var pw = document.getElementById('pw').value;
@@ -239,7 +235,7 @@ function doLogin() {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
     loadSignups().then(function(){});
-    renderArtistList();
+    renderArtistList().then(function(){});
   } else {
     document.getElementById('login-error').style.display = 'block';
   }
@@ -252,92 +248,26 @@ function doLogout() {
 }
 
 function switchTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
   btn.classList.add('active');
-  document.getElementById('tab-'+tab).classList.add('active');
-  if (tab==='sales') renderSales();
-  if (tab==='artists') renderArtistList();
-  if (tab==='interested') loadInterested();
-  if (tab==='metrics') loadMetrics();
-}
-
-async function loadMetrics() {
-  try {
-    // Get archived totals
-    var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbHeaders()});
-    var data = await res.json();
-    var m = data.length > 0 ? data[0] : {};
-    var archivedSignups = parseInt(m.total_signups||0);
-    var archivedSales = parseInt(m.total_sales||0);
-    var archivedRevenue = parseFloat(m.total_revenue||0);
-    var archivedSPP = parseFloat(m.total_spp||0);
-    var archivedArtist = parseFloat(m.total_artist_amount||0);
-    var archivedInterest = parseInt(m.total_artist_interest||0);
-
-    // Get current live signups
-    var sRes = await fetch(SB_URL+'/rest/v1/signups?select=id', {headers:sbHeaders()});
-    var sData = await sRes.json();
-    var liveSignups = Array.isArray(sData) ? sData.length : 0;
-
-    // Get current live sales
-    var salRes = await fetch(SB_URL+'/rest/v1/sales?select=price,artist_amount,spp_amount', {headers:sbHeaders()});
-    var salData = await salRes.json();
-    var liveSales = Array.isArray(salData) ? salData.length : 0;
-    var liveRevenue = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.price||0);},0) : 0;
-    var liveSPP = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.spp_amount||0);},0) : 0;
-    var liveArtist = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.artist_amount||0);},0) : 0;
-
-    // Get current live artist interest
-    var aRes = await fetch(SB_URL+'/rest/v1/artists?select=id', {headers:sbHeaders()});
-    var aData = await aRes.json();
-    var liveInterest = Array.isArray(aData) ? aData.length : 0;
-
-    // Display combined totals
-    document.getElementById('m-signups').textContent = archivedSignups + liveSignups;
-    document.getElementById('m-sales').textContent = archivedSales + liveSales;
-    document.getElementById('m-revenue').textContent = '$'+(archivedRevenue + liveRevenue).toFixed(2);
-    document.getElementById('m-spp').textContent = '$'+(archivedSPP + liveSPP).toFixed(2);
-    document.getElementById('m-artists-amt').textContent = '$'+(archivedArtist + liveArtist).toFixed(2);
-    document.getElementById('m-interest').textContent = archivedInterest + liveInterest;
-  } catch(e) { console.error(e); }
-}
-
-async function saveMetricsSnapshot(type, data) {
-  // Get current metrics
-  var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbHeaders()});
-  var existing = await res.json();
-  var m = existing.length > 0 ? existing[0] : {total_sales:0,total_revenue:0,total_spp:0,total_artist_amount:0,total_signups:0,total_artist_interest:0};
-
-  if (type === 'sales') {
-    m.total_sales = (m.total_sales||0) + data.count;
-    m.total_revenue = (m.total_revenue||0) + data.revenue;
-    m.total_spp = (m.total_spp||0) + data.spp;
-    m.total_artist_amount = (m.total_artist_amount||0) + data.artist;
-  } else if (type === 'signups') {
-    m.total_signups = (m.total_signups||0) + data.count;
-  } else if (type === 'interest') {
-    m.total_artist_interest = (m.total_artist_interest||0) + data.count;
-  }
-
-  // Upsert metrics
-  delete m.id; delete m.created_at;
-  await fetch(SB_URL+'/rest/v1/metrics', {
-    method: 'POST',
-    headers: Object.assign({}, sbHeaders(), {'Prefer': 'resolution=merge-duplicates'}),
-    body: JSON.stringify(m)
-  });
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'sales') renderSales();
+  if (tab === 'artists') renderArtistList().then(function(){});
+  if (tab === 'interested') loadInterested();
+  if (tab === 'metrics') loadMetrics();
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showSaveNotice() { var n=document.getElementById('save-notice'); n.style.display='block'; setTimeout(function(){n.style.display='none';},3000); }
 
-// SIGNUPS
+// ── SIGNUPS ──
 async function loadSignups() {
   try {
-    var res = await fetch(SB_URL+'/rest/v1/signups?select=*&order=created_at.desc', {headers:sbHeaders()});
+    var res = await fetch(SB_URL+'/rest/v1/signups?select=*&order=created_at.desc', {headers:sbH()});
     var data = await res.json();
-    allSignups = data.map(function(r){return {id:r.id, date:r.created_at, name:r.name||'', email:r.email};});
-  } catch(e) { allSignups=[]; }
+    allSignups = data.map(function(r) { return {id:r.id, date:r.created_at, name:r.name||'', email:r.email}; });
+  } catch(e) { allSignups = []; }
   applyFilters();
   updateSignupStats();
 }
@@ -345,13 +275,13 @@ async function loadSignups() {
 function updateSignupStats() {
   document.getElementById('stat-total').textContent = allSignups.length;
   var now = new Date();
-  var month = allSignups.filter(function(s){var d=new Date(s.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-  document.getElementById('stat-recent').textContent = month.length;
+  var m = allSignups.filter(function(s) { var d=new Date(s.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); });
+  document.getElementById('stat-recent').textContent = m.length;
 }
 
 function applyFilters() {
   var from=document.getElementById('filter-from').value, to=document.getElementById('filter-to').value, search=document.getElementById('filter-search').value.toLowerCase();
-  filtered = allSignups.filter(function(s){
+  filtered = allSignups.filter(function(s) {
     var d=s.date.split('T')[0];
     if(from&&d<from)return false; if(to&&d>to)return false;
     if(search&&s.name.toLowerCase().indexOf(search)===-1&&s.email.toLowerCase().indexOf(search)===-1)return false;
@@ -388,102 +318,89 @@ function renderSignupTable() {
 }
 
 async function deleteSignup(id) {
-  if(confirm('Delete this signup?')) {
-    await fetch(SB_URL+'/rest/v1/signups?id=eq.'+id, {method:'DELETE', headers:sbHeaders()});
-    await loadSignups();
-  }
+  if(confirm('Delete this signup?')) { await fetch(SB_URL+'/rest/v1/signups?id=eq.'+id,{method:'DELETE',headers:sbH()}); await loadSignups(); }
 }
 
 function exportSignupsCSV() {
   var search=document.getElementById('filter-search').value.toLowerCase();
   var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
-  var header='Date,Name,Email\n';
-  var body=rows.map(function(s){return '"'+new Date(s.date).toLocaleString()+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"';}).join('\n');
-  downloadCSV(header+body,'SeaPonyPress_Signups_'+today()+'.csv');
+  downloadCSV('Date,Name,Email\n'+rows.map(function(s){return '"'+new Date(s.date).toLocaleString()+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"';}).join('\n'),'SeaPonyPress_Signups_'+today()+'.csv');
 }
 
 function exportSignupsPDF() {
   var search=document.getElementById('filter-search').value.toLowerCase();
   var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
   var win=window.open('','_blank');
-  win.document.write('<html><head><title>Signups</title><style>body{font-family:Georgia,serif;padding:2rem}table{width:100%;border-collapse:collapse}th{background:#2d4a2a;color:white;padding:.5rem}td{padding:.5rem;border-bottom:1px solid #eee}</style></head><body>');
-  win.document.write('<h2>Sea Pony Press Signups</h2><table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
+  win.document.write('<html><head><title>Signups</title><style>body{font-family:Georgia,serif;padding:2rem}table{width:100%;border-collapse:collapse}th{background:#2d4a2a;color:white;padding:.5rem}td{padding:.5rem;border-bottom:1px solid #eee}</style></head><body><h2>Sea Pony Press Signups</h2><table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
   rows.forEach(function(s){win.document.write('<tr><td>'+new Date(s.date).toLocaleDateString()+'</td><td>'+(s.name||'—')+'</td><td>'+s.email+'</td></tr>');});
-  win.document.write('</tbody></table></body></html>');
-  win.document.close(); win.print();
+  win.document.write('</tbody></table></body></html>'); win.document.close(); win.print();
 }
 
 async function clearSignups() {
   if(confirm('Delete ALL signup data? Cannot be undone.')) {
     await saveMetricsSnapshot('signups', {count: allSignups.length});
-    await fetch(SB_URL+'/rest/v1/signups?id=gte.0',{method:'DELETE',headers:sbHeaders()});
+    await fetch(SB_URL+'/rest/v1/signups?id=gte.0',{method:'DELETE',headers:sbH()});
     allSignups=[];filtered=[];renderSignupTable();updateSignupStats();
   }
 }
 
-// SALES
+// ── SALES ──
 async function loadSalesData() {
   try {
-    var res=await fetch(SB_URL+'/rest/v1/sales?select=*&order=created_at.desc',{headers:sbHeaders()});
+    var res=await fetch(SB_URL+'/rest/v1/sales?select=*&order=created_at.desc',{headers:sbH()});
     var data=await res.json();
-    return data.map(function(r){return {date:r.created_at,items:[{artist:r.artist,price:r.price,artistAmt:r.artist_amount,sppAmt:r.spp_amount,isSPP:r.artist_amount===0}]};});
+    return data.map(function(r){return {id:r.id,date:r.created_at,artist:r.artist,price:parseFloat(r.price||0),artistAmt:parseFloat(r.artist_amount||0),sppAmt:parseFloat(r.spp_amount||0)};});
   } catch(e){return [];}
 }
 
 async function renderSales() {
-  var sales=await loadSalesData(), allItems=[];
-  sales.forEach(function(s){s.items.forEach(function(i){allItems.push(Object.assign({},i,{date:s.date}));});});
-  var totalRev=allItems.reduce(function(sum,i){return sum+i.price;},0);
-  var totalSPP=allItems.reduce(function(sum,i){return sum+i.sppAmt;},0);
-  var totalArt=allItems.reduce(function(sum,i){return sum+i.artistAmt;},0);
-  document.getElementById('sales-count').textContent=allItems.length;
+  var items=await loadSalesData();
+  var totalRev=items.reduce(function(s,i){return s+i.price;},0);
+  var totalSPP=items.reduce(function(s,i){return s+i.sppAmt;},0);
+  var totalArt=items.reduce(function(s,i){return s+i.artistAmt;},0);
+  document.getElementById('sales-count').textContent=items.length;
   document.getElementById('sales-revenue').textContent='$'+totalRev.toFixed(2);
   document.getElementById('sales-spp').textContent='$'+totalSPP.toFixed(2);
   document.getElementById('sales-artists').textContent='$'+totalArt.toFixed(2);
   var byArtist={};
-  allItems.forEach(function(i){if(!i.isSPP){if(!byArtist[i.artist])byArtist[i.artist]={count:0,total:0,owed:0};byArtist[i.artist].count++;byArtist[i.artist].total+=i.price;byArtist[i.artist].owed+=i.artistAmt;}});
+  items.forEach(function(i){if(!byArtist[i.artist])byArtist[i.artist]={count:0,total:0,owed:0};byArtist[i.artist].count++;byArtist[i.artist].total+=i.price;byArtist[i.artist].owed+=i.artistAmt;});
   var bd=document.getElementById('artist-breakdown');
   var entries=Object.entries(byArtist).sort(function(a,b){return b[1].owed-a[1].owed;});
-  bd.innerHTML=entries.length===0?'<p style="color:var(--fog);font-size:.88rem">No artist sales yet.</p>':entries.map(function(e){return '<div class="artist-breakdown-row"><div><div class="adr-name">'+esc(e[0])+'</div><div class="adr-sub">'+e[1].count+' piece'+(e[1].count!==1?'s':'')+' · $'+e[1].total.toFixed(2)+' total</div></div><div class="adr-amount">$'+e[1].owed.toFixed(2)+' owed</div></div>';}).join('');
-  var tbody=document.getElementById('sales-tbody'), empty=document.getElementById('sales-empty');
-  if(allItems.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  bd.innerHTML=entries.length===0?'<p style="color:var(--fog);font-size:.88rem">No sales yet.</p>':entries.map(function(e){return '<div class="artist-breakdown-row"><div><div class="adr-name">'+esc(e[0])+'</div><div class="adr-sub">'+e[1].count+' piece'+(e[1].count!==1?'s':'')+' · $'+e[1].total.toFixed(2)+' total</div></div><div class="adr-amount">$'+e[1].owed.toFixed(2)+' owed</div></div>';}).join('');
+  var tbody=document.getElementById('sales-tbody'),empty=document.getElementById('sales-empty');
+  if(items.length===0){tbody.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  tbody.innerHTML=allItems.sort(function(a,b){return new Date(b.date)-new Date(a.date);}).map(function(i){var d=new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});return '<tr><td class="date-cell">'+d+'</td><td>'+esc(i.artist)+'</td><td>$'+i.price.toFixed(2)+'</td><td>'+(i.isSPP?'—':'$'+i.artistAmt.toFixed(2))+'</td><td>$'+i.sppAmt.toFixed(2)+'</td></tr>';}).join('');
+  tbody.innerHTML=items.map(function(i){var d=new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});return '<tr><td class="date-cell">'+d+'</td><td>'+esc(i.artist)+'</td><td>$'+i.price.toFixed(2)+'</td><td>$'+i.artistAmt.toFixed(2)+'</td><td>$'+i.sppAmt.toFixed(2)+'</td></tr>';}).join('');
 }
 
 function exportSalesCSV() {
-  loadSalesData().then(function(sales){
-    var allItems=[];sales.forEach(function(s){s.items.forEach(function(i){allItems.push(Object.assign({},i,{date:s.date}));});});
-    var header='Date,Artist,Sale Price,Artist Gets,SPP Keeps\n';
-    var body=allItems.map(function(i){return '"'+new Date(i.date).toLocaleString()+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n');
-    downloadCSV(header+body,'SeaPonyPress_Sales_'+today()+'.csv');
+  loadSalesData().then(function(items){
+    downloadCSV('Date,Artist,Sale Price,Artist Gets,SPP Keeps\n'+items.map(function(i){return '"'+new Date(i.date).toLocaleString()+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n'),'SeaPonyPress_Sales_'+today()+'.csv');
   });
 }
 
 async function clearSales() {
   if(confirm('Delete ALL sales data? Cannot be undone.')) {
-    var sales = await loadSalesData();
-    var allItems = [];
-    sales.forEach(function(s){s.items.forEach(function(i){allItems.push(i);});});
-    var totalRev = allItems.reduce(function(sum,i){return sum+i.price;},0);
-    var totalSPP = allItems.reduce(function(sum,i){return sum+i.sppAmt;},0);
-    var totalArt = allItems.reduce(function(sum,i){return sum+i.artistAmt;},0);
-    await saveMetricsSnapshot('sales', {count:allItems.length, revenue:totalRev, spp:totalSPP, artist:totalArt});
-    await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbHeaders()});
+    var items=await loadSalesData();
+    var totalRev=items.reduce(function(s,i){return s+i.price;},0);
+    var totalSPP=items.reduce(function(s,i){return s+i.sppAmt;},0);
+    var totalArt=items.reduce(function(s,i){return s+i.artistAmt;},0);
+    await saveMetricsSnapshot('sales',{count:items.length,revenue:totalRev,spp:totalSPP,artist:totalArt});
+    await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbH()});
     renderSales();
   }
 }
 
-// ARTIST INTEREST
+// ── ARTIST INTEREST ──
 async function loadInterested() {
   try {
-    var res=await fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbHeaders()});
+    var res=await fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbH()});
     var data=await res.json();
     var now=new Date();
     var month=data.filter(function(r){var d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
     document.getElementById('interest-total').textContent=data.length;
     document.getElementById('interest-month').textContent=month.length;
-    var tbody=document.getElementById('interest-tbody'), empty=document.getElementById('interest-empty');
+    var tbody=document.getElementById('interest-tbody'),empty=document.getElementById('interest-empty');
     if(data.length===0){tbody.innerHTML='';empty.style.display='block';return;}
     empty.style.display='none';
     tbody.innerHTML=data.map(function(r){
@@ -494,103 +411,124 @@ async function loadInterested() {
 }
 
 async function deleteInterest(id) {
-  if(confirm('Delete this submission?')) {
-    await fetch(SB_URL+'/rest/v1/artists?id=eq.'+id,{method:'DELETE',headers:sbHeaders()});
-    await loadInterested();
-  }
+  if(confirm('Delete this submission?')) { await fetch(SB_URL+'/rest/v1/artists?id=eq.'+id,{method:'DELETE',headers:sbH()}); loadInterested(); }
 }
 
 function exportInterestCSV() {
-  fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbHeaders()}).then(function(r){return r.json();}).then(function(data){
-    var header='Date,Name,Email,Phone,Location,Portfolio,About Work\n';
-    var body=data.map(function(r){return [new Date(r.created_at).toLocaleString(),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-    downloadCSV(header+body,'SeaPonyPress_ArtistInterest_'+today()+'.csv');
+  fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
+    downloadCSV('Date,Name,Email,Phone,Location,Portfolio,About Work\n'+data.map(function(r){return [new Date(r.created_at).toLocaleString(),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n'),'SeaPonyPress_ArtistInterest_'+today()+'.csv');
   });
 }
 
-// MANAGE ARTISTS
+// ── MANAGE ARTISTS (Supabase) ──
 async function getArtistsFromDB() {
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artist_list?select=*&order=id.asc', {headers:sbHeaders()});
+    var res = await fetch(SB_URL+'/rest/v1/artist_list?select=*&order=id.asc', {headers:sbH()});
     var data = await res.json();
-    if (Array.isArray(data) && data.length > 0) return data;
-    return DEFAULT_ARTISTS.map(function(a){return {name:a.name, spp_pct:a.sppPct||20};});
-  } catch(e) { return DEFAULT_ARTISTS.map(function(a){return {name:a.name, spp_pct:20};}); }
+    if (Array.isArray(data)) return data;
+    return [];
+  } catch(e) { return []; }
 }
 
-function showSaveNotice() {
-  var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000);
-}
 async function renderArtistList() {
   var artists = await getArtistsFromDB();
+  var container = document.getElementById('artist-list');
   if (artists.length === 0) {
-    document.getElementById('artist-list').innerHTML = '<p style="color:var(--fog);font-size:0.88rem">No artists yet — add one above.</p>';
+    container.innerHTML = '<p style="color:var(--fog);font-size:0.88rem">No artists yet — add one above.</p>';
     return;
   }
-  var html = artists.map(function(a) {
-    var sppPct = a.spp_pct !== undefined ? a.spp_pct : 20;
-    var artistPct = 100 - sppPct;
-    return '<div class="artist-list-item" style="flex-wrap:wrap;gap:0.5rem;align-items:center">' +
-      '<span class="artist-name" style="min-width:150px">'+esc(a.name)+'</span>' +
+  container.innerHTML = artists.map(function(a) {
+    var pct = a.spp_pct !== undefined ? a.spp_pct : 20;
+    var artistPct = 100 - pct;
+    return '<div class="artist-list-item">' +
+      '<span class="artist-name">'+esc(a.name)+'</span>' +
       '<span style="font-size:0.8rem;color:var(--fog)">SPP gets</span>' +
-      '<input type="number" id="pct-'+a.id+'" min="0" max="100" value="'+sppPct+'" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
+      '<input type="number" id="pct-'+a.id+'" min="0" max="100" value="'+pct+'" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center">' +
       '<span style="font-size:0.8rem;color:var(--fog)">% &nbsp;·&nbsp; artist gets <strong>'+artistPct+'%</strong></span>' +
-      '<button class="btn secondary small" onclick="updateSppPct('+a.id+')">Save %</button>' +
+      '<button class="btn secondary small" onclick="savePct('+a.id+')">Save %</button>' +
       '<button class="btn danger small" onclick="removeArtist('+a.id+')">Remove</button>' +
     '</div>';
   }).join('');
-  document.getElementById('artist-list').innerHTML = html;
 }
 
-function 
-async function updateSppPct(id) {
+async function addArtist() {
+  var input = document.getElementById('new-artist');
+  var name = input.value.trim();
+  if (!name) return;
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/artist_list', {
+      method: 'POST',
+      headers: Object.assign({}, sbH(), {'Prefer':'return=minimal'}),
+      body: JSON.stringify({name: name, spp_pct: 20})
+    });
+    if (!res.ok) { var err = await res.text(); alert('Error: ' + err); return; }
+    input.value = '';
+    showSaveNotice();
+    await renderArtistList();
+  } catch(e) { alert('Network error: ' + e.message); }
+}
+
+async function savePct(id) {
   var input = document.getElementById('pct-'+id);
-  if (!input) { alert('Could not find input'); return; }
-  var pct = Math.min(100, Math.max(0, parseInt(input.value)||20));
+  var pct = Math.min(100, Math.max(0, parseInt(input.value) || 20));
   try {
     var res = await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {
       method: 'PATCH',
-      headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
+      headers: Object.assign({}, sbH(), {'Prefer':'return=minimal'}),
       body: JSON.stringify({spp_pct: pct})
     });
     if (!res.ok) { var err = await res.text(); alert('Error: ' + err); return; }
     showSaveNotice();
-    renderArtistList();
+    await renderArtistList();
   } catch(e) { alert('Network error: ' + e.message); }
 }
 
-async function addArtist() {
-  var input=document.getElementById('new-artist'), name=input.value.trim();
-  if(!name)return;
-  var artists=await getArtistsFromDB();
-  if(artists.find(function(a){return a.name.toLowerCase()===name.toLowerCase();})){alert('Already in list.');return;}
-  try {
-    var res = await fetch(SB_URL+'/rest/v1/artist_list', {
-      method: 'POST',
-      headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
-      body: JSON.stringify({name:name, spp_pct:20})
-    });
-    if (!res.ok) {
-      var err = await res.text();
-      alert('Error saving: ' + err);
-      return;
-    }
-    input.value='';
-    showSaveNotice();
-    await renderArtistList();
-  } catch(e) {
-    alert('Network error: ' + e.message);
-  }
-}
 async function removeArtist(id) {
-  if(confirm('Remove this artist?')) {
-    await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {method:'DELETE', headers:sbHeaders()});
-    renderArtistList();
+  if (confirm('Remove this artist?')) {
+    await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {method:'DELETE', headers:sbH()});
+    await renderArtistList();
   }
 }
 
-// UTILS
-function downloadCSV(content,filename) { var blob=new Blob([content],{type:'text/csv'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url); }
+// ── METRICS ──
+async function loadMetrics() {
+  try {
+    var mRes = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbH()});
+    var mData = await mRes.json();
+    var m = mData.length > 0 ? mData[0] : {};
+    var sRes = await fetch(SB_URL+'/rest/v1/signups?select=id', {headers:sbH()});
+    var sData = await sRes.json();
+    var salRes = await fetch(SB_URL+'/rest/v1/sales?select=price,artist_amount,spp_amount', {headers:sbH()});
+    var salData = await salRes.json();
+    var aRes = await fetch(SB_URL+'/rest/v1/artists?select=id', {headers:sbH()});
+    var aData = await aRes.json();
+    var liveSignups = Array.isArray(sData) ? sData.length : 0;
+    var liveSales = Array.isArray(salData) ? salData.length : 0;
+    var liveRev = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.price||0);},0) : 0;
+    var liveSPP = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.spp_amount||0);},0) : 0;
+    var liveArt = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.artist_amount||0);},0) : 0;
+    var liveInt = Array.isArray(aData) ? aData.length : 0;
+    document.getElementById('m-signups').textContent = parseInt(m.total_signups||0) + liveSignups;
+    document.getElementById('m-sales').textContent = parseInt(m.total_sales||0) + liveSales;
+    document.getElementById('m-revenue').textContent = '$'+(parseFloat(m.total_revenue||0)+liveRev).toFixed(2);
+    document.getElementById('m-spp').textContent = '$'+(parseFloat(m.total_spp||0)+liveSPP).toFixed(2);
+    document.getElementById('m-artists-amt').textContent = '$'+(parseFloat(m.total_artist_amount||0)+liveArt).toFixed(2);
+    document.getElementById('m-interest').textContent = parseInt(m.total_artist_interest||0) + liveInt;
+  } catch(e) { console.error(e); }
+}
+
+async function saveMetricsSnapshot(type, data) {
+  var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbH()});
+  var existing = await res.json();
+  var m = existing.length > 0 ? Object.assign({},existing[0]) : {total_sales:0,total_revenue:0,total_spp:0,total_artist_amount:0,total_signups:0,total_artist_interest:0};
+  delete m.id; delete m.created_at;
+  if (type==='sales') { m.total_sales=(parseFloat(m.total_sales)||0)+data.count; m.total_revenue=(parseFloat(m.total_revenue)||0)+data.revenue; m.total_spp=(parseFloat(m.total_spp)||0)+data.spp; m.total_artist_amount=(parseFloat(m.total_artist_amount)||0)+data.artist; }
+  if (type==='signups') { m.total_signups=(parseInt(m.total_signups)||0)+data.count; }
+  await fetch(SB_URL+'/rest/v1/metrics', { method:'POST', headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}), body:JSON.stringify(m) });
+}
+
+// ── UTILS ──
+function downloadCSV(content, filename) { var blob=new Blob([content],{type:'text/csv'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
 function today() { return new Date().toISOString().split('T')[0]; }
 </script>
 </body>
