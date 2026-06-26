@@ -509,20 +509,30 @@ function exportInterestCSV() {
 }
 
 // MANAGE ARTISTS
-function getArtists() { try{return JSON.parse(localStorage.getItem(ARTISTS_KEY)||JSON.stringify(DEFAULT_ARTISTS));}catch(e){return DEFAULT_ARTISTS.slice();} }
-function saveArtists(artists) { localStorage.setItem(ARTISTS_KEY,JSON.stringify(artists)); var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000); }
-function renderArtistList() {
-  var artists=getArtists();
+async function getArtistsFromDB() {
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/artists_list?select=*&order=id.asc', {headers:sbHeaders()});
+    var data = await res.json();
+    if (Array.isArray(data) && data.length > 0) return data;
+    return DEFAULT_ARTISTS.map(function(a){return {name:a.name, spp_pct:a.sppPct||20};});
+  } catch(e) { return DEFAULT_ARTISTS.map(function(a){return {name:a.name, spp_pct:20};}); }
+}
+
+function showSaveNotice() {
+  var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000);
+}
+async function renderArtistList() {
+  var artists=await getArtistsFromDB();
   var html=artists.map(function(a,i){
-    var sppPct = a.sppPct !== undefined ? a.sppPct : 20;
+    var sppPct = a.spp_pct !== undefined ? a.spp_pct : 20;
     return '<div class="artist-list-item" style="flex-wrap:wrap;gap:0.5rem;align-items:center">' +
       '<span class="artist-name">'+esc(a.name)+'</span>' +
       '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;white-space:nowrap">' +
         '<span style="color:var(--fog)">SPP gets</span>' +
-        '<input type="number" min="0" max="100" value="'+sppPct+'" onchange="updateSppPct('+i+',this.value)" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
+        '<input type="number" min="0" max="100" value="'+sppPct+'" onchange="updateSppPct('+a.id+',this.value)" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
         '<span style="color:var(--fog)">%</span>' +
       '</label>' +
-      '<button class="btn danger small" onclick="removeArtist('+i+')">Remove</button>' +
+      '<button class="btn danger small" onclick="removeArtist('+a.id+')">Remove</button>' +
     '</div>';
   }).join('');
   document.getElementById('artist-list').innerHTML=html;
@@ -535,16 +545,25 @@ function updateSppPct(index, value) {
   artists[index].fullDonation = pct === 100;
   saveArtists(artists);
 }
-function addArtist() {
+async function addArtist() {
   var input=document.getElementById('new-artist'), name=input.value.trim();
   if(!name)return;
-  var artists=getArtists();
+  var artists=await getArtistsFromDB();
   if(artists.find(function(a){return a.name.toLowerCase()===name.toLowerCase();})){alert('Already in list.');return;}
-  artists.push({name:name});saveArtists(artists);renderArtistList();input.value='';
+  await fetch(SB_URL+'/rest/v1/artists_list', {
+    method: 'POST',
+    headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
+    body: JSON.stringify({name:name, spp_pct:20})
+  });
+  showSaveNotice();
+  renderArtistList();
+  input.value='';
 }
-function removeArtist(index) {
-  var artists=getArtists();
-  if(confirm('Remove '+artists[index].name+'?')){artists.splice(index,1);saveArtists(artists);renderArtistList();}
+async function removeArtist(id) {
+  if(confirm('Remove this artist?')) {
+    await fetch(SB_URL+'/rest/v1/artists_list?id=eq.'+id, {method:'DELETE', headers:sbHeaders()});
+    renderArtistList();
+  }
 }
 
 // UTILS

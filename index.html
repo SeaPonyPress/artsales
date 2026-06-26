@@ -550,12 +550,29 @@ const DEFAULT_ARTISTS = [
 ];
 
 function getArtists() {
+  // Return cached artists or defaults while async load happens
+  return window._cachedArtists || DEFAULT_ARTISTS.map(a => ({...a, sppPct: a.sppPct||20}));
+}
+
+async function loadArtistsFromDB() {
   try {
-    const raw = localStorage.getItem('spp_artists');
-    return raw ? JSON.parse(raw) : DEFAULT_ARTISTS.map(a => ({...a}));
-  } catch(e) {
-    return DEFAULT_ARTISTS.map(a => ({...a}));
-  }
+    const SUPABASE_URL = 'https://vyjnyoropzkirzapjssc.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_xAy7JBkovw65m8Vrzm_qGQ_4X-0DSXI';
+    const res = await fetch(SUPABASE_URL + '/rest/v1/artists_list?select=*&order=id.asc', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      window._cachedArtists = data.map(a => ({name: a.name, sppPct: a.spp_pct || 20}));
+    }
+  } catch(e) {}
+  // Refresh all dropdowns with latest artists
+  document.querySelectorAll('.art-row select').forEach(function(sel) {
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Select artist —</option>' +
+      getArtists().map(a => '<option value="' + a.name + '">' + a.name + '</option>').join('');
+    sel.value = current;
+  });
 }
 
 
@@ -770,6 +787,7 @@ function initPayPal() { recalc(); }
 function toggleNL(cb) { document.getElementById('nl-fields').style.display = cb.checked ? 'grid' : 'none'; }
 
 addRow();
+loadArtistsFromDB();
 </script>
 </body>
 </html>
