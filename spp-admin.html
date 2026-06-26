@@ -554,14 +554,23 @@ async function addArtist() {
   if(!name)return;
   var artists=await getArtistsFromDB();
   if(artists.find(function(a){return a.name.toLowerCase()===name.toLowerCase();})){alert('Already in list.');return;}
-  await fetch(SB_URL+'/rest/v1/artists_list', {
-    method: 'POST',
-    headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
-    body: JSON.stringify({name:name, spp_pct:20})
-  });
-  showSaveNotice();
-  renderArtistList();
-  input.value='';
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/artists_list', {
+      method: 'POST',
+      headers: Object.assign({}, sbHeaders(), {'Prefer':'return=minimal'}),
+      body: JSON.stringify({name:name, spp_pct:20})
+    });
+    if (!res.ok) {
+      var err = await res.text();
+      alert('Error saving: ' + err);
+      return;
+    }
+    input.value='';
+    showSaveNotice();
+    await renderArtistList();
+  } catch(e) {
+    alert('Network error: ' + e.message);
+  }
 }
 async function removeArtist(id) {
   if(confirm('Remove this artist?')) {
