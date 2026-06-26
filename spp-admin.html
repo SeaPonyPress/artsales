@@ -522,20 +522,24 @@ function showSaveNotice() {
   var n=document.getElementById('save-notice');n.style.display='block';setTimeout(function(){n.style.display='none';},3000);
 }
 async function renderArtistList() {
-  var artists=await getArtistsFromDB();
-  var html=artists.map(function(a,i){
+  var artists = await getArtistsFromDB();
+  if (artists.length === 0) {
+    document.getElementById('artist-list').innerHTML = '<p style="color:var(--fog);font-size:0.88rem">No artists yet — add one above.</p>';
+    return;
+  }
+  var html = artists.map(function(a) {
     var sppPct = a.spp_pct !== undefined ? a.spp_pct : 20;
+    var artistPct = 100 - sppPct;
     return '<div class="artist-list-item" style="flex-wrap:wrap;gap:0.5rem;align-items:center">' +
-      '<span class="artist-name">'+esc(a.name)+'</span>' +
-      '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;white-space:nowrap">' +
-        '<span style="color:var(--fog)">SPP gets</span>' +
-        '<input type="number" min="0" max="100" value="'+sppPct+'" onchange="updateSppPct('+a.id+',this.value)" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
-        '<span style="color:var(--fog)">%</span>' +
-      '</label>' +
+      '<span class="artist-name" style="min-width:150px">'+esc(a.name)+'</span>' +
+      '<span style="font-size:0.8rem;color:var(--fog)">SPP gets</span>' +
+      '<input type="number" id="pct-'+a.id+'" min="0" max="100" value="'+sppPct+'" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center;margin:0">' +
+      '<span style="font-size:0.8rem;color:var(--fog)">% &nbsp;·&nbsp; artist gets <strong>'+artistPct+'%</strong></span>' +
+      '<button class="btn secondary small" onclick="updateSppPct('+a.id+')">Save %</button>' +
       '<button class="btn danger small" onclick="removeArtist('+a.id+')">Remove</button>' +
     '</div>';
   }).join('');
-  document.getElementById('artist-list').innerHTML=html;
+  document.getElementById('artist-list').innerHTML = html;
 }
 
 function updateSppPct(index, value) {
