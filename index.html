@@ -202,6 +202,54 @@
     margin-bottom: 0;
   }
 
+  /* ── MEMBERSHIP ── */
+  .membership-wrap {
+    background: rgba(45,74,42,0.06);
+    border: 1px solid rgba(45,74,42,0.2);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .membership-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 0.86rem;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .membership-toggle input[type='checkbox'] {
+    margin-top: 2px;
+    flex-shrink: 0;
+    accent-color: var(--moss);
+    width: 16px;
+    height: 16px;
+  }
+
+  .membership-badge {
+    display: inline-block;
+    background: var(--moss);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+
+  .membership-desc {
+    font-size: 0.78rem;
+    color: var(--fog);
+    margin-top: 0.35rem;
+    margin-left: 1.5rem;
+    line-height: 1.5;
+  }
+
   /* ── NEWSLETTER ── */
   .newsletter-wrap {
     background: var(--cream);
@@ -489,6 +537,16 @@
       <div class="nl-status" id="nl-status"></div>
     </div>
 
+    <div class="membership-wrap">
+      <label class="membership-toggle">
+        <input type="checkbox" id="membership-check" onchange="recalc()">
+        <div>
+          <span>Add Sitka Conservation Society Membership<span class="membership-badge">+$30</span></span>
+          <div class="membership-desc">Join Alaska's oldest grassroots conservation organization. Members are our foundation and your support strengthens our voice for the Tongass. As thanks, we'll send you our annual photography calendar by mail.</div>
+        </div>
+      </label>
+    </div>
+
     <div class="running-total" id="running-total">
       <div id="rt-breakdown"></div>
       <div class="rt-line grand"><span>Total</span><span id="rt-grand">$0</span></div>
@@ -625,7 +683,7 @@ function getOrderData() {
     if (artist && !isNaN(price) && price > 0) {
       const artistsList = getArtists();
       const artistObj = artistsList.find(function(a){ return a.name === artist; });
-      const sPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20;
+      const sPct = artistObj && artistObj.spp_pct !== undefined ? artistObj.spp_pct : (artistObj.sppPct !== undefined ? artistObj.sppPct : 20);
       const artistAmt = price * (1 - sPct/100);
       const sppAmt = price * (sPct/100);
       artistBreakdown[artist] = (artistBreakdown[artist] || 0) + artistAmt;
@@ -647,7 +705,7 @@ function recalc() {
     if (!artistEl || !priceEl) return;
     const artist = artistEl.value;
     const price = parseFloat(priceEl.value);
-    const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20; const isSPP = sppPct === 100;
+    const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.spp_pct !== undefined ? artistObj.spp_pct : (artistObj.sppPct !== undefined ? artistObj.sppPct : 20); const isSPP = sppPct === 100;
     if (artist && !isNaN(price) && price > 0) {
       sp.style.display = 'block';
       if (isSPP) {
@@ -700,6 +758,9 @@ function recalc() {
           const firstName = document.getElementById('nl-first').value.trim();
           const email = document.getElementById('nl-email').value.trim();
           if (nlChecked && email) await submitToNationBuilder(firstName, email);
+          // Save membership if checked
+          var memCheck = document.getElementById('membership-check');
+          if (memCheck && memCheck.checked) await saveMembership(firstName, email);
           // Save sales record
           await saveSalesRecord();
           document.getElementById('pay-section').style.display = 'none';
@@ -759,7 +820,7 @@ async function saveSalesRecord() {
       const artist = artistEl.value;
       const price = parseFloat(priceEl.value);
       if (artist && !isNaN(price) && price > 0) {
-        const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.sppPct !== undefined ? artistObj.sppPct : 20; const isSPP = sppPct === 100;
+        const artists = getArtists(); const artistObj = artists.find(a => a.name === artist); const sppPct = artistObj && artistObj.spp_pct !== undefined ? artistObj.spp_pct : (artistObj.sppPct !== undefined ? artistObj.sppPct : 20); const isSPP = sppPct === 100;
         items.push({
           artist: artist,
           price: price,
@@ -781,6 +842,33 @@ async function saveSalesRecord() {
       });
     }
   } catch(e) {}
+}
+
+async function saveMembership(name, email) {
+  try {
+    // Save to memberships table for counting
+    await fetch(SUPABASE_URL + '/rest/v1/memberships', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ name: name, email: email, amount: 30, source: 'art_sales_page' })
+    });
+    // Also save to sales table so it shows in sales tab
+    await fetch(SUPABASE_URL + '/rest/v1/sales', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ artist: 'SCS Membership', price: 30, artist_amount: 0, spp_amount: 30 })
+    });
+  } catch(e) { console.error('Membership save failed:', e); }
 }
 
 function initPayPal() { recalc(); }

@@ -142,6 +142,12 @@
         <div class="stat-card"><div class="stat-num" id="sales-spp">$0</div><div class="stat-label">SPP keeps</div></div>
         <div class="stat-card"><div class="stat-num" id="sales-artists">$0</div><div class="stat-label">Owed to artists</div></div>
       </div>
+      <div class="controls" style="margin-bottom:1.25rem">
+        <div class="control-group"><label class="field-label">From</label><input type="date" id="sales-from"></div>
+        <div class="control-group"><label class="field-label">To</label><input type="date" id="sales-to"></div>
+        <button class="btn" onclick="renderSales()">Filter</button>
+        <button class="btn secondary" onclick="clearSalesFilter()">Clear</button>
+      </div>
       <div class="section-card">
         <h2>By Artist</h2>
         <p>Running totals for quarterly payouts.</p>
@@ -214,6 +220,7 @@
         <div class="stat-card"><div class="stat-num" id="m-spp">$0.00</div><div class="stat-label">Total to SPP</div></div>
         <div class="stat-card"><div class="stat-num" id="m-artists-amt">$0.00</div><div class="stat-label">Total to artists</div></div>
         <div class="stat-card"><div class="stat-num" id="m-interest">0</div><div class="stat-label">Artist inquiries</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-members">0</div><div class="stat-label">SCS memberships</div></div>
       </div>
     </div>
   </div>
@@ -256,6 +263,7 @@ function switchTab(tab, btn) {
   if (tab === 'artists') renderArtistList().then(function(){});
   if (tab === 'interested') loadInterested();
   if (tab === 'metrics') loadMetrics();
+
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -324,7 +332,7 @@ async function deleteSignup(id) {
 function exportSignupsCSV() {
   var search=document.getElementById('filter-search').value.toLowerCase();
   var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
-  downloadCSV('Date,Name,Email\n'+rows.map(function(s){return '"'+new Date(s.date).toLocaleString()+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"';}).join('\n'),'SeaPonyPress_Signups_'+today()+'.csv');
+  downloadCSV('Date,Name,Email\n'+rows.map(function(s){return '"'+new Date(s.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"';}).join('\n'),'SeaPonyPress_Signups_'+today()+'.csv');
 }
 
 function exportSignupsPDF() {
@@ -353,8 +361,26 @@ async function loadSalesData() {
   } catch(e){return [];}
 }
 
+function clearSalesFilter() {
+  document.getElementById('sales-from').value='';
+  document.getElementById('sales-to').value='';
+  renderSales();
+}
+
 async function renderSales() {
   var items=await loadSalesData();
+  var fromEl = document.getElementById('sales-from');
+  var toEl = document.getElementById('sales-to');
+  var from = fromEl ? fromEl.value : '';
+  var to = toEl ? toEl.value : '';
+  if (from || to) {
+    items = items.filter(function(i) {
+      var d = i.date.split('T')[0];
+      if (from && d < from) return false;
+      if (to && d > to) return false;
+      return true;
+    });
+  }
   var totalRev=items.reduce(function(s,i){return s+i.price;},0);
   var totalSPP=items.reduce(function(s,i){return s+i.sppAmt;},0);
   var totalArt=items.reduce(function(s,i){return s+i.artistAmt;},0);
@@ -375,7 +401,7 @@ async function renderSales() {
 
 function exportSalesCSV() {
   loadSalesData().then(function(items){
-    downloadCSV('Date,Artist,Sale Price,Artist Gets,SPP Keeps\n'+items.map(function(i){return '"'+new Date(i.date).toLocaleString()+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n'),'SeaPonyPress_Sales_'+today()+'.csv');
+    downloadCSV('Date,Artist,Sale Price,Artist Gets,SPP Keeps\n'+items.map(function(i){return '"'+new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n'),'SeaPonyPress_Sales_'+today()+'.csv');
   });
 }
 
@@ -416,7 +442,7 @@ async function deleteInterest(id) {
 
 function exportInterestCSV() {
   fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
-    downloadCSV('Date,Name,Email,Phone,Location,Portfolio,About Work\n'+data.map(function(r){return [new Date(r.created_at).toLocaleString(),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n'),'SeaPonyPress_ArtistInterest_'+today()+'.csv');
+    downloadCSV('Date,Name,Email,Phone,Location,Portfolio,About Work\n'+data.map(function(r){return [new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n'),'SeaPonyPress_ArtistInterest_'+today()+'.csv');
   });
 }
 
@@ -514,6 +540,10 @@ async function loadMetrics() {
     document.getElementById('m-spp').textContent = '$'+(parseFloat(m.total_spp||0)+liveSPP).toFixed(2);
     document.getElementById('m-artists-amt').textContent = '$'+(parseFloat(m.total_artist_amount||0)+liveArt).toFixed(2);
     document.getElementById('m-interest').textContent = parseInt(m.total_artist_interest||0) + liveInt;
+    // Membership count
+    var memRes = await fetch(SB_URL+'/rest/v1/memberships?select=id', {headers:sbH()});
+    var memData = await memRes.json();
+    document.getElementById('m-members').textContent = Array.isArray(memData) ? memData.length : 0;
   } catch(e) { console.error(e); }
 }
 
