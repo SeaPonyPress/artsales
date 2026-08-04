@@ -691,6 +691,13 @@ function getOrderData() {
       noteLines.push(artist + ' $' + artistAmt.toFixed(2));
     }
   });
+  // Add membership if checked
+  var memEl = document.getElementById('membership-check');
+  if (memEl && memEl.checked) {
+    grand += 30;
+    sppTotal += 30;
+    noteLines.push('SCS Membership $30.00');
+  }
   return { grand, artistBreakdown, sppTotal, note: 'SPP art sale: ' + noteLines.join(', ') + ' | SPP keeps $' + sppTotal.toFixed(2) };
 }
 
