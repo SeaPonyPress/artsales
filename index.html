@@ -723,8 +723,8 @@ function recalc() {
         sppTotal += price; grand += price;
         noteLines.push(artist + ' $' + price.toFixed(2) + ' (100% SPP)');
       } else {
-        const artistAmt = price * (1 - SPP_PCT);
-        const sppAmt = price * SPP_PCT;
+        const artistAmt = price * (1 - sppPct/100);
+        const sppAmt = price * (sppPct/100);
         document.getElementById('sa-' + id).parentElement.style.display = 'flex';
         document.getElementById('al-' + id).textContent = 'To artist (' + (100-sppPct) + '%)';
         document.getElementById('aa-' + id).textContent = '$' + artistAmt.toFixed(2);
@@ -745,6 +745,13 @@ function recalc() {
     Object.entries(artistBreakdown).forEach(([name, amt]) => {
       summaryHtml += '<div class="pay-summary-line"><span>' + name + '</span><span>$' + amt.toFixed(2) + ' owed to artist</span></div>';
     });
+    // Add membership to display
+    var memEl = document.getElementById('membership-check');
+    if (memEl && memEl.checked) {
+      grand += 30;
+      sppTotal += 30;
+      summaryHtml += '<div class="pay-summary-line"><span>SCS Membership</span><span>$30.00</span></div>';
+    }
     if (sppTotal > 0) summaryHtml += '<div class="pay-summary-line"><span>Sea Pony Press</span><span>$' + sppTotal.toFixed(2) + '</span></div>';
     summaryHtml += '<div class="pay-summary-line total"><span>Total to pay now</span><span>$' + grand.toFixed(2) + '</span></div>';
     document.getElementById('pay-summary').innerHTML = summaryHtml;
@@ -831,8 +838,8 @@ async function saveSalesRecord() {
         items.push({
           artist: artist,
           price: price,
-          artist_amount: isSPP ? 0 : price * 0.8,
-          spp_amount: isSPP ? price : price * 0.2
+          artist_amount: price * (1 - sppPct/100),
+          spp_amount: price * (sppPct/100)
         });
       }
     });
@@ -881,8 +888,7 @@ async function saveMembership(name, email) {
 function initPayPal() { recalc(); }
 function toggleNL(cb) { document.getElementById('nl-fields').style.display = cb.checked ? 'grid' : 'none'; }
 
-addRow();
-loadArtistsFromDB();
+loadArtistsFromDB().then(function() { addRow(); });
 </script>
 </body>
 </html>
