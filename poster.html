@@ -207,6 +207,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://www.paypal.com/sdk/js?client-id=AUu4PltsLMPBwYIbGD7aplDBioaFYO8OCVcER2mUe26eU19vQmesOUXV2NTCXMLYoPxn3Iaiae8U9zaM&currency=USD';
+  s.onload = function(){ initMembershipPayPal(); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
 const SUPABASE_URL = 'https://vyjnyoropzkirzapjssc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xAy7JBkovw65m8Vrzm_qGQ_4X-0DSXI';
 const EMAILJS_PUBLIC_KEY = 'rMczIhUpA_Z7Uwvg3';
@@ -217,15 +225,32 @@ emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
 var paypalMembershipRendered = false;
 
+function initMembershipPayPal() {
+  if (paypalMembershipRendered) return;
+  paypalMembershipRendered = true;
+  paypal.Buttons({
+    style: { color: 'gold', shape: 'rect', label: 'pay', height: 44 },
+    createOrder: function(data, actions) {
+      return actions.order.create({
+        purchase_units: [{ amount: { value: '30.00' }, description: 'SCS Membership — Sea Pony Press Poster Project' }]
+      });
+    },
+    onApprove: async function(data, actions) {
+      await actions.order.capture();
+      document.getElementById('membership-check').dataset.paid = 'true';
+      document.getElementById('membership-paypal').innerHTML = '<p style="color:var(--success);font-size:0.85rem;margin-top:0.5rem">✓ Membership payment received!</p>';
+    },
+    onError: function(err) { alert('Payment error — please try again or email info@sitkawild.org'); }
+  }).render('#membership-paypal');
+}
+
 function toggleMembership() {
   var checked = document.getElementById('membership-check').checked;
   var container = document.getElementById('membership-paypal');
-  if (checked && !paypalMembershipRendered) {
+  if (checked) {
     container.style.display = 'block';
-    paypalMembershipRendered = true;
-    // Render PayPal button for membership only
-    // This is handled at form submit time
-  } else if (!checked) {
+    if (window.paypal && !paypalMembershipRendered) initMembershipPayPal();
+  } else {
     container.style.display = 'none';
   }
 }
@@ -236,7 +261,9 @@ async function handleSubmit() {
   var location = document.getElementById('location').value.trim();
   var social = document.getElementById('social').value.trim();
   var nlChecked = document.getElementById('nl-check').checked;
-  var memChecked = document.getElementById('membership-check').checked;
+  var memEl = document.getElementById('membership-check');
+  var memChecked = memEl && memEl.checked;
+  var memPaid = memEl && memEl.dataset.paid === 'true';
 
   if (!name) { alert('Please enter your name.'); return; }
   if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
@@ -279,13 +306,6 @@ async function handleSubmit() {
     // 4. Show success
     document.getElementById('form-card').style.display = 'none';
     document.getElementById('success-msg').style.display = 'block';
-
-    // 5. If membership, redirect to art sales page with membership pre-checked
-    if (memChecked) {
-      setTimeout(function() {
-        window.location.href = 'index.html?membership=1';
-      }, 3000);
-    }
 
   } catch(e) {
     console.error(e);
