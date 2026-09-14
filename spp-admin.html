@@ -184,6 +184,25 @@
       <div class="export-row">
         <button class="btn secondary" onclick="exportInterestCSV()">Export CSV</button>
       </div>
+
+      <div class="section-card" style="margin-top:1.5rem">
+        <h2>Poster Pickups</h2>
+        <p>People registered in the Public Lands Poster Project.</p>
+        <div class="stats-bar" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-num" id="poster-total">0</div><div class="stat-label">Total pickups</div></div>
+          <div class="stat-card"><div class="stat-num" id="poster-month">0</div><div class="stat-label">This month</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Location</th><th>Social</th><th>Member</th></tr></thead>
+            <tbody id="poster-tbody"></tbody>
+          </table>
+          <div class="empty-state" id="poster-empty" style="display:none"><strong>No poster pickups yet</strong></div>
+        </div>
+        <div class="export-row" style="margin-top:1rem">
+          <button class="btn secondary" onclick="exportPostersCSV()">Export CSV</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -261,7 +280,7 @@ function switchTab(tab, btn) {
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'sales') renderSales();
   if (tab === 'artists') renderArtistList().then(function(){});
-  if (tab === 'interested') loadInterested();
+  if (tab === 'interested') { loadInterested(); loadPosters(); }
   if (tab === 'metrics') loadMetrics();
 
 }
@@ -557,7 +576,39 @@ async function saveMetricsSnapshot(type, data) {
   await fetch(SB_URL+'/rest/v1/metrics', { method:'POST', headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}), body:JSON.stringify(m) });
 }
 
-// ── UTILS ──
+// -- POSTERS --
+async function loadPosters() {
+  try {
+    var res = await fetch(SB_URL+'/rest/v1/posters?select=*&order=created_at.desc', {headers:sbH()});
+    var data = await res.json();
+    if (!Array.isArray(data)) return;
+    var now = new Date();
+    var month = data.filter(function(r){var d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+    document.getElementById('poster-total').textContent = data.length;
+    document.getElementById('poster-month').textContent = month.length;
+    var tbody=document.getElementById('poster-tbody'), empty=document.getElementById('poster-empty');
+    if(data.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none';
+    tbody.innerHTML=data.map(function(r){
+      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return '<tr><td class="date-cell">'+d+'</td><td>'+esc(r.name||'')+'</td><td>'+esc(r.email||'')+'</td><td>'+esc(r.location||'-')+'</td><td>'+(r.social?'<a href="'+esc(r.social)+'" target="_blank" style="color:var(--moss)">link</a>':'-')+'</td><td>'+(r.membership?'Yes':'-')+'</td></tr>';
+    }).join('');
+  } catch(e){console.error(e);}
+}
+
+function exportPostersCSV() {
+  fetch(SB_URL+'/rest/v1/posters?select=*&order=created_at.desc',{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
+    var rows = data.map(function(r){
+      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return [d,r.name,r.email,r.location,r.social||'',r.membership?'Yes':'No'].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(',');
+    });
+    downloadCSV('Date,Name,Email,Location,Social,Member
+'+rows.join('
+'),'SeaPonyPress_PosterPickups_'+today()+'.csv');
+  });
+}
+
+// -- UTILS --
 function downloadCSV(content, filename) { var blob=new Blob([content],{type:'text/csv'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
 function today() { return new Date().toISOString().split('T')[0]; }
 </script>
