@@ -27,7 +27,7 @@
   .admin-header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: white; letter-spacing: 0.05em; }
   .logout { font-size: 0.78rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
   .tabs { display: flex; background: var(--moss-light); flex-wrap: wrap; }
-  .tab { padding: 0.75rem 1.1rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.82rem; font-weight: 600; border-bottom: 3px solid transparent; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
+  .tab { padding: 0.75rem 1.1rem; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.82rem; font-weight: 600; background: none; border: none; border-bottom: 3px solid transparent; font-family: 'Source Sans 3', sans-serif; }
   .tab:hover { color: white; }
   .tab.active { color: white; border-bottom: 3px solid rgba(255,255,255,0.8); }
   .tab-content { display: none; }
@@ -87,7 +87,7 @@
 
 <div class="admin-wrap" id="admin-wrap">
   <div class="admin-header">
-    <h1>Sea Pony Press — Admin</h1>
+    <h1>Sea Pony Press Admin</h1>
     <button class="logout" onclick="doLogout()">Sign out</button>
   </div>
   <div class="tabs">
@@ -142,7 +142,7 @@
         <div class="stat-card"><div class="stat-num" id="sales-spp">$0</div><div class="stat-label">SPP keeps</div></div>
         <div class="stat-card"><div class="stat-num" id="sales-artists">$0</div><div class="stat-label">Owed to artists</div></div>
       </div>
-      <div class="controls" style="margin-bottom:1.25rem">
+      <div class="controls">
         <div class="control-group"><label class="field-label">From</label><input type="date" id="sales-from"></div>
         <div class="control-group"><label class="field-label">To</label><input type="date" id="sales-to"></div>
         <button class="btn" onclick="renderSales()">Filter</button>
@@ -220,7 +220,7 @@
           <button class="btn" onclick="addArtist()">Add</button>
         </div>
         <div id="artist-list"></div>
-        <div class="save-notice" id="save-notice">✓ Saved successfully</div>
+        <div class="save-notice" id="save-notice">Saved successfully</div>
       </div>
     </div>
   </div>
@@ -240,6 +240,7 @@
         <div class="stat-card"><div class="stat-num" id="m-artists-amt">$0.00</div><div class="stat-label">Total to artists</div></div>
         <div class="stat-card"><div class="stat-num" id="m-interest">0</div><div class="stat-label">Artist inquiries</div></div>
         <div class="stat-card"><div class="stat-num" id="m-members">0</div><div class="stat-label">SCS memberships</div></div>
+        <div class="stat-card"><div class="stat-num" id="m-posters">0</div><div class="stat-label">Poster pickups</div></div>
       </div>
     </div>
   </div>
@@ -260,8 +261,8 @@ function doLogin() {
   if (pw === PASS) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    try { loadSignups().then(function(){}); } catch(e) { console.error(e); }
-    try { renderArtistList().then(function(){}); } catch(e) { console.error(e); }
+    loadSignups();
+    renderArtistList();
   } else {
     document.getElementById('login-error').style.display = 'block';
   }
@@ -279,21 +280,21 @@ function switchTab(tab, btn) {
   btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'sales') renderSales();
-  if (tab === 'artists') renderArtistList().then(function(){});
+  if (tab === 'artists') renderArtistList();
   if (tab === 'interested') { loadInterested(); loadPosters(); }
   if (tab === 'metrics') loadMetrics();
-
 }
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function showSaveNotice() { var n=document.getElementById('save-notice'); n.style.display='block'; setTimeout(function(){n.style.display='none';},3000); }
+function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function showSaveNotice() { var n = document.getElementById('save-notice'); n.style.display = 'block'; setTimeout(function() { n.style.display = 'none'; }, 3000); }
+function fmt(d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
 
-// ── SIGNUPS ──
+// SIGNUPS
 async function loadSignups() {
   try {
-    var res = await fetch(SB_URL+'/rest/v1/signups?select=*&order=created_at.desc', {headers:sbH()});
+    var res = await fetch(SB_URL + '/rest/v1/signups?select=*&order=created_at.desc', { headers: sbH() });
     var data = await res.json();
-    allSignups = data.map(function(r) { return {id:r.id, date:r.created_at, name:r.name||'', email:r.email}; });
+    allSignups = data.map(function(r) { return { id: r.id, date: r.created_at, name: r.name || '', email: r.email }; });
   } catch(e) { allSignups = []; }
   applyFilters();
   updateSignupStats();
@@ -302,96 +303,107 @@ async function loadSignups() {
 function updateSignupStats() {
   document.getElementById('stat-total').textContent = allSignups.length;
   var now = new Date();
-  var m = allSignups.filter(function(s) { var d=new Date(s.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); });
+  var m = allSignups.filter(function(s) { var d = new Date(s.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
   document.getElementById('stat-recent').textContent = m.length;
 }
 
 function applyFilters() {
-  var from=document.getElementById('filter-from').value, to=document.getElementById('filter-to').value, search=document.getElementById('filter-search').value.toLowerCase();
+  var from = document.getElementById('filter-from').value;
+  var to = document.getElementById('filter-to').value;
+  var search = document.getElementById('filter-search').value.toLowerCase();
   filtered = allSignups.filter(function(s) {
-    var d=s.date.split('T')[0];
-    if(from&&d<from)return false; if(to&&d>to)return false;
-    if(search&&s.name.toLowerCase().indexOf(search)===-1&&s.email.toLowerCase().indexOf(search)===-1)return false;
+    var d = s.date.split('T')[0];
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    if (search && s.name.toLowerCase().indexOf(search) === -1 && s.email.toLowerCase().indexOf(search) === -1) return false;
     return true;
   });
   sortData();
 }
 
-function clearFilters() { document.getElementById('filter-from').value=''; document.getElementById('filter-to').value=''; document.getElementById('filter-search').value=''; applyFilters(); }
+function clearFilters() {
+  document.getElementById('filter-from').value = '';
+  document.getElementById('filter-to').value = '';
+  document.getElementById('filter-search').value = '';
+  applyFilters();
+}
 
 function sortBy(col) {
-  if(sortCol===col){sortDir*=-1;}else{sortCol=col;sortDir=col==='date'?-1:1;}
-  ['date','name','email'].forEach(function(c){document.getElementById('sort-'+c).textContent='';});
-  document.getElementById('sort-'+col).textContent=sortDir===-1?'↓':'↑';
+  if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = col === 'date' ? -1 : 1; }
+  ['date', 'name', 'email'].forEach(function(c) { document.getElementById('sort-' + c).textContent = ''; });
+  document.getElementById('sort-' + col).textContent = sortDir === -1 ? 'v' : '^';
   sortData();
 }
 
 function sortData() {
-  filtered.sort(function(a,b){var av=a[sortCol]||'',bv=b[sortCol]||'';return av<bv?-sortDir:av>bv?sortDir:0;});
+  filtered.sort(function(a, b) { var av = a[sortCol] || '', bv = b[sortCol] || ''; return av < bv ? -sortDir : av > bv ? sortDir : 0; });
   renderSignupTable();
 }
 
 function renderSignupTable() {
-  var search=document.getElementById('filter-search').value.toLowerCase();
-  var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
-  document.getElementById('stat-filtered').textContent=rows.length;
-  var tbody=document.getElementById('signup-tbody'), empty=document.getElementById('signup-empty');
-  if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  tbody.innerHTML=rows.map(function(s){
-    var d=new Date(s.date), ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}), ts=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    return '<tr><td class="date-cell">'+ds+' · '+ts+'</td><td>'+esc(s.name||'—')+'</td><td>'+esc(s.email)+'</td><td><button class="btn danger small" onclick="deleteSignup(\''+s.id+'\')">✕</button></td></tr>';
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
+  document.getElementById('stat-filtered').textContent = rows.length;
+  var tbody = document.getElementById('signup-tbody'), empty = document.getElementById('signup-empty');
+  if (rows.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.map(function(s) {
+    var d = new Date(s.date), ds = fmt(s.date), ts = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return '<tr><td class="date-cell">' + ds + ' ' + ts + '</td><td>' + esc(s.name || '-') + '</td><td>' + esc(s.email) + '</td><td><button class="btn danger small" onclick="deleteSignup(\'' + s.id + '\')">x</button></td></tr>';
   }).join('');
 }
 
 async function deleteSignup(id) {
-  if(confirm('Delete this signup?')) { await fetch(SB_URL+'/rest/v1/signups?id=eq.'+id,{method:'DELETE',headers:sbH()}); await loadSignups(); }
-}
-
-function exportSignupsCSV() {
-  var search=document.getElementById('filter-search').value.toLowerCase();
-  var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
-  downloadCSV('Date,Name,Email\n'+rows.map(function(s){return '"'+new Date(s.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'","'+(s.name||'').replace(/"/g,'""')+'","'+s.email.replace(/"/g,'""')+'"';}).join('\n'),'SeaPonyPress_Signups_'+today()+'.csv');
-}
-
-function exportSignupsPDF() {
-  var search=document.getElementById('filter-search').value.toLowerCase();
-  var rows=search?filtered.filter(function(s){return s.name.toLowerCase().indexOf(search)!==-1||s.email.toLowerCase().indexOf(search)!==-1;}):filtered;
-  var win=window.open('','_blank');
-  win.document.write('<html><head><title>Signups</title><style>body{font-family:Georgia,serif;padding:2rem}table{width:100%;border-collapse:collapse}th{background:#2d4a2a;color:white;padding:.5rem}td{padding:.5rem;border-bottom:1px solid #eee}</style></head><body><h2>Sea Pony Press Signups</h2><table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
-  rows.forEach(function(s){win.document.write('<tr><td>'+new Date(s.date).toLocaleDateString()+'</td><td>'+(s.name||'—')+'</td><td>'+s.email+'</td></tr>');});
-  win.document.write('</tbody></table></body></html>'); win.document.close(); win.print();
-}
-
-async function clearSignups() {
-  if(confirm('Delete ALL signup data? Cannot be undone.')) {
-    await saveMetricsSnapshot('signups', {count: allSignups.length});
-    await fetch(SB_URL+'/rest/v1/signups?id=gte.0',{method:'DELETE',headers:sbH()});
-    allSignups=[];filtered=[];renderSignupTable();updateSignupStats();
+  if (confirm('Delete this signup?')) {
+    await fetch(SB_URL + '/rest/v1/signups?id=eq.' + id, { method: 'DELETE', headers: sbH() });
+    await loadSignups();
   }
 }
 
-// ── SALES ──
-async function loadSalesData() {
-  try {
-    var res=await fetch(SB_URL+'/rest/v1/sales?select=*&order=created_at.desc',{headers:sbH()});
-    var data=await res.json();
-    return data.map(function(r){return {id:r.id,date:r.created_at,artist:r.artist,price:parseFloat(r.price||0),artistAmt:parseFloat(r.artist_amount||0),sppAmt:parseFloat(r.spp_amount||0)};});
-  } catch(e){return [];}
+function exportSignupsCSV() {
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
+  var lines = rows.map(function(s) { return '"' + fmt(s.date) + '","' + (s.name || '').replace(/"/g, '""') + '","' + s.email.replace(/"/g, '""') + '"'; });
+  downloadCSV('Date,Name,Email\n' + lines.join('\n'), 'SeaPonyPress_Signups_' + today() + '.csv');
 }
 
+function exportSignupsPDF() {
+  var search = document.getElementById('filter-search').value.toLowerCase();
+  var rows = search ? filtered.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1 || s.email.toLowerCase().indexOf(search) !== -1; }) : filtered;
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>Signups</title><style>body{font-family:Georgia,serif;padding:2rem}table{width:100%;border-collapse:collapse}th{background:#2d4a2a;color:white;padding:.5rem}td{padding:.5rem;border-bottom:1px solid #eee}</style></head><body><h2>Sea Pony Press Signups</h2><table><thead><tr><th>Date</th><th>Name</th><th>Email</th></tr></thead><tbody>');
+  rows.forEach(function(s) { win.document.write('<tr><td>' + fmt(s.date) + '</td><td>' + (s.name || '-') + '</td><td>' + s.email + '</td></tr>'); });
+  win.document.write('</tbody></table></body></html>');
+  win.document.close(); win.print();
+}
+
+async function clearSignups() {
+  if (confirm('Delete ALL signup data? Cannot be undone.')) {
+    await saveMetricsSnapshot('signups', { count: allSignups.length });
+    await fetch(SB_URL + '/rest/v1/signups?id=gte.0', { method: 'DELETE', headers: sbH() });
+    allSignups = []; filtered = []; renderSignupTable(); updateSignupStats();
+  }
+}
+
+// SALES
 function clearSalesFilter() {
-  document.getElementById('sales-from').value='';
-  document.getElementById('sales-to').value='';
+  document.getElementById('sales-from').value = '';
+  document.getElementById('sales-to').value = '';
   renderSales();
 }
 
+async function loadSalesData() {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/sales?select=*&order=created_at.desc', { headers: sbH() });
+    var data = await res.json();
+    return data.map(function(r) { return { id: r.id, date: r.created_at, artist: r.artist, price: parseFloat(r.price || 0), artistAmt: parseFloat(r.artist_amount || 0), sppAmt: parseFloat(r.spp_amount || 0) }; });
+  } catch(e) { return []; }
+}
+
 async function renderSales() {
-  var items=await loadSalesData();
-  var fromEl = document.getElementById('sales-from');
-  var toEl = document.getElementById('sales-to');
-  var from = fromEl ? fromEl.value : '';
-  var to = toEl ? toEl.value : '';
+  var items = await loadSalesData();
+  var from = document.getElementById('sales-from') ? document.getElementById('sales-from').value : '';
+  var to = document.getElementById('sales-to') ? document.getElementById('sales-to').value : '';
   if (from || to) {
     items = items.filter(function(i) {
       var d = i.date.split('T')[0];
@@ -400,75 +412,112 @@ async function renderSales() {
       return true;
     });
   }
-  var totalRev=items.reduce(function(s,i){return s+i.price;},0);
-  var totalSPP=items.reduce(function(s,i){return s+i.sppAmt;},0);
-  var totalArt=items.reduce(function(s,i){return s+i.artistAmt;},0);
-  document.getElementById('sales-count').textContent=items.length;
-  document.getElementById('sales-revenue').textContent='$'+totalRev.toFixed(2);
-  document.getElementById('sales-spp').textContent='$'+totalSPP.toFixed(2);
-  document.getElementById('sales-artists').textContent='$'+totalArt.toFixed(2);
-  var byArtist={};
-  items.forEach(function(i){if(!byArtist[i.artist])byArtist[i.artist]={count:0,total:0,owed:0};byArtist[i.artist].count++;byArtist[i.artist].total+=i.price;byArtist[i.artist].owed+=i.artistAmt;});
-  var bd=document.getElementById('artist-breakdown');
-  var entries=Object.entries(byArtist).sort(function(a,b){return b[1].owed-a[1].owed;});
-  bd.innerHTML=entries.length===0?'<p style="color:var(--fog);font-size:.88rem">No sales yet.</p>':entries.map(function(e){return '<div class="artist-breakdown-row"><div><div class="adr-name">'+esc(e[0])+'</div><div class="adr-sub">'+e[1].count+' piece'+(e[1].count!==1?'s':'')+' · $'+e[1].total.toFixed(2)+' total</div></div><div class="adr-amount">$'+e[1].owed.toFixed(2)+' owed</div></div>';}).join('');
-  var tbody=document.getElementById('sales-tbody'),empty=document.getElementById('sales-empty');
-  if(items.length===0){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  tbody.innerHTML=items.map(function(i){var d=new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});return '<tr><td class="date-cell">'+d+'</td><td>'+esc(i.artist)+'</td><td>$'+i.price.toFixed(2)+'</td><td>$'+i.artistAmt.toFixed(2)+'</td><td>$'+i.sppAmt.toFixed(2)+'</td></tr>';}).join('');
+  var totalRev = items.reduce(function(s, i) { return s + i.price; }, 0);
+  var totalSPP = items.reduce(function(s, i) { return s + i.sppAmt; }, 0);
+  var totalArt = items.reduce(function(s, i) { return s + i.artistAmt; }, 0);
+  document.getElementById('sales-count').textContent = items.length;
+  document.getElementById('sales-revenue').textContent = '$' + totalRev.toFixed(2);
+  document.getElementById('sales-spp').textContent = '$' + totalSPP.toFixed(2);
+  document.getElementById('sales-artists').textContent = '$' + totalArt.toFixed(2);
+  var byArtist = {};
+  items.forEach(function(i) {
+    if (!byArtist[i.artist]) byArtist[i.artist] = { count: 0, total: 0, owed: 0 };
+    byArtist[i.artist].count++; byArtist[i.artist].total += i.price; byArtist[i.artist].owed += i.artistAmt;
+  });
+  var entries = Object.entries(byArtist).sort(function(a, b) { return b[1].owed - a[1].owed; });
+  var bd = document.getElementById('artist-breakdown');
+  bd.innerHTML = entries.length === 0 ? '<p style="color:var(--fog);font-size:.88rem">No sales yet.</p>' : entries.map(function(e) {
+    return '<div class="artist-breakdown-row"><div><div class="adr-name">' + esc(e[0]) + '</div><div class="adr-sub">' + e[1].count + ' piece' + (e[1].count !== 1 ? 's' : '') + ' · $' + e[1].total.toFixed(2) + ' total</div></div><div class="adr-amount">$' + e[1].owed.toFixed(2) + ' owed</div></div>';
+  }).join('');
+  var tbody = document.getElementById('sales-tbody'), empty = document.getElementById('sales-empty');
+  if (items.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = items.map(function(i) {
+    return '<tr><td class="date-cell">' + fmt(i.date) + '</td><td>' + esc(i.artist) + '</td><td>$' + i.price.toFixed(2) + '</td><td>$' + i.artistAmt.toFixed(2) + '</td><td>$' + i.sppAmt.toFixed(2) + '</td></tr>';
+  }).join('');
 }
 
 function exportSalesCSV() {
-  loadSalesData().then(function(items){
-    downloadCSV('Date,Artist,Sale Price,Artist Gets,SPP Keeps\n'+items.map(function(i){return '"'+new Date(i.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'","'+i.artist+'",'+i.price.toFixed(2)+','+i.artistAmt.toFixed(2)+','+i.sppAmt.toFixed(2);}).join('\n'),'SeaPonyPress_Sales_'+today()+'.csv');
+  loadSalesData().then(function(items) {
+    var lines = items.map(function(i) { return '"' + fmt(i.date) + '","' + i.artist + '",' + i.price.toFixed(2) + ',' + i.artistAmt.toFixed(2) + ',' + i.sppAmt.toFixed(2); });
+    downloadCSV('Date,Artist,Sale Price,Artist Gets,SPP Keeps\n' + lines.join('\n'), 'SeaPonyPress_Sales_' + today() + '.csv');
   });
 }
 
 async function clearSales() {
-  if(confirm('Delete ALL sales data? Cannot be undone.')) {
-    var items=await loadSalesData();
-    var totalRev=items.reduce(function(s,i){return s+i.price;},0);
-    var totalSPP=items.reduce(function(s,i){return s+i.sppAmt;},0);
-    var totalArt=items.reduce(function(s,i){return s+i.artistAmt;},0);
-    await saveMetricsSnapshot('sales',{count:items.length,revenue:totalRev,spp:totalSPP,artist:totalArt});
-    await fetch(SB_URL+'/rest/v1/sales?id=gte.0',{method:'DELETE',headers:sbH()});
+  if (confirm('Delete ALL sales data? Cannot be undone.')) {
+    var items = await loadSalesData();
+    var totalRev = items.reduce(function(s, i) { return s + i.price; }, 0);
+    var totalSPP = items.reduce(function(s, i) { return s + i.sppAmt; }, 0);
+    var totalArt = items.reduce(function(s, i) { return s + i.artistAmt; }, 0);
+    await saveMetricsSnapshot('sales', { count: items.length, revenue: totalRev, spp: totalSPP, artist: totalArt });
+    await fetch(SB_URL + '/rest/v1/sales?id=gte.0', { method: 'DELETE', headers: sbH() });
     renderSales();
   }
 }
 
-// ── ARTIST INTEREST ──
+// ARTIST INTEREST
 async function loadInterested() {
   try {
-    var res=await fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbH()});
-    var data=await res.json();
-    var now=new Date();
-    var month=data.filter(function(r){var d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-    document.getElementById('interest-total').textContent=data.length;
-    document.getElementById('interest-month').textContent=month.length;
-    var tbody=document.getElementById('interest-tbody'),empty=document.getElementById('interest-empty');
-    if(data.length===0){tbody.innerHTML='';empty.style.display='block';return;}
-    empty.style.display='none';
-    tbody.innerHTML=data.map(function(r){
-      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      return '<tr><td class="date-cell">'+d+'</td><td>'+esc(r.name||'')+'</td><td>'+esc(r.email||'')+'</td><td>'+esc(r.phone||'—')+'</td><td>'+esc(r.location||'')+'</td><td>'+(r.portfolio?'<a href="'+esc(r.portfolio)+'" target="_blank" style="color:var(--moss)">link</a>':'—')+'</td><td><button class="btn danger small" onclick="deleteInterest('+r.id+')">✕</button></td></tr>';
+    var res = await fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbH() });
+    var data = await res.json();
+    var now = new Date();
+    var month = data.filter(function(r) { var d = new Date(r.created_at); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+    document.getElementById('interest-total').textContent = data.length;
+    document.getElementById('interest-month').textContent = month.length;
+    var tbody = document.getElementById('interest-tbody'), empty = document.getElementById('interest-empty');
+    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map(function(r) {
+      return '<tr><td class="date-cell">' + fmt(r.created_at) + '</td><td>' + esc(r.name || '') + '</td><td>' + esc(r.email || '') + '</td><td>' + esc(r.phone || '-') + '</td><td>' + esc(r.location || '') + '</td><td>' + (r.portfolio ? '<a href="' + esc(r.portfolio) + '" target="_blank" style="color:var(--moss)">link</a>' : '-') + '</td><td><button class="btn danger small" onclick="deleteInterest(' + r.id + ')">x</button></td></tr>';
     }).join('');
-  } catch(e){console.error(e);}
+  } catch(e) { console.error(e); }
 }
 
 async function deleteInterest(id) {
-  if(confirm('Delete this submission?')) { await fetch(SB_URL+'/rest/v1/artists?id=eq.'+id,{method:'DELETE',headers:sbH()}); loadInterested(); }
+  if (confirm('Delete this submission?')) {
+    await fetch(SB_URL + '/rest/v1/artists?id=eq.' + id, { method: 'DELETE', headers: sbH() });
+    loadInterested();
+  }
 }
 
 function exportInterestCSV() {
-  fetch(SB_URL+'/rest/v1/artists?select=*&order=created_at.desc',{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
-    downloadCSV('Date,Name,Email,Phone,Location,Portfolio,About Work\n'+data.map(function(r){return [new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),r.name,r.email,r.phone||'',r.location,r.portfolio||'',(r.medium||'').replace(/,/g,';')].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n'),'SeaPonyPress_ArtistInterest_'+today()+'.csv');
+  fetch(SB_URL + '/rest/v1/artists?select=*&order=created_at.desc', { headers: sbH() }).then(function(r) { return r.json(); }).then(function(data) {
+    var lines = data.map(function(r) { return [fmt(r.created_at), r.name, r.email, r.phone || '', r.location, r.portfolio || '', (r.medium || '').replace(/,/g, ';')].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); });
+    downloadCSV('Date,Name,Email,Phone,Location,Portfolio,About Work\n' + lines.join('\n'), 'SeaPonyPress_ArtistInterest_' + today() + '.csv');
   });
 }
 
-// ── MANAGE ARTISTS (Supabase) ──
+// POSTER PICKUPS
+async function loadPosters() {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/posters?select=*&order=created_at.desc', { headers: sbH() });
+    var data = await res.json();
+    if (!Array.isArray(data)) return;
+    var now = new Date();
+    var month = data.filter(function(r) { var d = new Date(r.created_at); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+    document.getElementById('poster-total').textContent = data.length;
+    document.getElementById('poster-month').textContent = month.length;
+    var tbody = document.getElementById('poster-tbody'), empty = document.getElementById('poster-empty');
+    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map(function(r) {
+      return '<tr><td class="date-cell">' + fmt(r.created_at) + '</td><td>' + esc(r.name || '') + '</td><td>' + esc(r.email || '') + '</td><td>' + esc(r.location || '-') + '</td><td>' + (r.social ? '<a href="' + esc(r.social) + '" target="_blank" style="color:var(--moss)">link</a>' : '-') + '</td><td>' + (r.membership ? 'Yes' : '-') + '</td></tr>';
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function exportPostersCSV() {
+  fetch(SB_URL + '/rest/v1/posters?select=*&order=created_at.desc', { headers: sbH() }).then(function(r) { return r.json(); }).then(function(data) {
+    var lines = data.map(function(r) { return [fmt(r.created_at), r.name, r.email, r.location, r.social || '', r.membership ? 'Yes' : 'No'].map(function(v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(','); });
+    downloadCSV('Date,Name,Email,Location,Social,Member\n' + lines.join('\n'), 'SeaPonyPress_PosterPickups_' + today() + '.csv');
+  });
+}
+
+// MANAGE ARTISTS
 async function getArtistsFromDB() {
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artist_list?select=*&order=id.asc', {headers:sbH()});
+    var res = await fetch(SB_URL + '/rest/v1/artist_list?select=*&order=id.asc', { headers: sbH() });
     var data = await res.json();
     if (Array.isArray(data)) return data;
     return [];
@@ -478,34 +527,19 @@ async function getArtistsFromDB() {
 async function renderArtistList() {
   var artists = await getArtistsFromDB();
   var container = document.getElementById('artist-list');
-  if (artists.length === 0) {
-    container.innerHTML = '<p style="color:var(--fog);font-size:0.88rem">No artists yet — add one above.</p>';
-    return;
-  }
+  if (artists.length === 0) { container.innerHTML = '<p style="color:var(--fog);font-size:0.88rem">No artists yet.</p>'; return; }
   container.innerHTML = artists.map(function(a) {
     var pct = a.spp_pct !== undefined ? a.spp_pct : 20;
     var artistPct = 100 - pct;
-    return '<div class="artist-list-item">' +
-      '<span class="artist-name">'+esc(a.name)+'</span>' +
-      '<span style="font-size:0.8rem;color:var(--fog)">SPP gets</span>' +
-      '<input type="number" id="pct-'+a.id+'" min="0" max="100" value="'+pct+'" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center">' +
-      '<span style="font-size:0.8rem;color:var(--fog)">% &nbsp;·&nbsp; artist gets <strong>'+artistPct+'%</strong></span>' +
-      '<button class="btn secondary small" onclick="savePct('+a.id+')">Save %</button>' +
-      '<button class="btn danger small" onclick="removeArtist('+a.id+')">Remove</button>' +
-    '</div>';
+    return '<div class="artist-list-item"><span class="artist-name">' + esc(a.name) + '</span><span style="font-size:0.8rem;color:var(--fog)">SPP gets</span><input type="number" id="pct-' + a.id + '" min="0" max="100" value="' + pct + '" style="width:52px;padding:0.2rem 0.4rem;font-size:0.85rem;border:1px solid rgba(45,74,42,0.3);border-radius:3px;text-align:center"><span style="font-size:0.8rem;color:var(--fog)">% · artist gets <strong>' + artistPct + '%</strong></span><button class="btn secondary small" onclick="savePct(' + a.id + ')">Save %</button><button class="btn danger small" onclick="removeArtist(' + a.id + ')">Remove</button></div>';
   }).join('');
 }
 
 async function addArtist() {
-  var input = document.getElementById('new-artist');
-  var name = input.value.trim();
+  var input = document.getElementById('new-artist'), name = input.value.trim();
   if (!name) return;
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artist_list', {
-      method: 'POST',
-      headers: Object.assign({}, sbH(), {'Prefer':'return=minimal'}),
-      body: JSON.stringify({name: name, spp_pct: 20})
-    });
+    var res = await fetch(SB_URL + '/rest/v1/artist_list', { method: 'POST', headers: Object.assign({}, sbH(), { 'Prefer': 'return=minimal' }), body: JSON.stringify({ name: name, spp_pct: 20 }) });
     if (!res.ok) { var err = await res.text(); alert('Error: ' + err); return; }
     input.value = '';
     showSaveNotice();
@@ -514,14 +548,10 @@ async function addArtist() {
 }
 
 async function savePct(id) {
-  var input = document.getElementById('pct-'+id);
+  var input = document.getElementById('pct-' + id);
   var pct = Math.min(100, Math.max(0, parseInt(input.value) || 20));
   try {
-    var res = await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {
-      method: 'PATCH',
-      headers: Object.assign({}, sbH(), {'Prefer':'return=minimal'}),
-      body: JSON.stringify({spp_pct: pct})
-    });
+    var res = await fetch(SB_URL + '/rest/v1/artist_list?id=eq.' + id, { method: 'PATCH', headers: Object.assign({}, sbH(), { 'Prefer': 'return=minimal' }), body: JSON.stringify({ spp_pct: pct }) });
     if (!res.ok) { var err = await res.text(); alert('Error: ' + err); return; }
     showSaveNotice();
     await renderArtistList();
@@ -530,84 +560,58 @@ async function savePct(id) {
 
 async function removeArtist(id) {
   if (confirm('Remove this artist?')) {
-    await fetch(SB_URL+'/rest/v1/artist_list?id=eq.'+id, {method:'DELETE', headers:sbH()});
+    await fetch(SB_URL + '/rest/v1/artist_list?id=eq.' + id, { method: 'DELETE', headers: sbH() });
     await renderArtistList();
   }
 }
 
-// ── METRICS ──
+// METRICS
 async function loadMetrics() {
   try {
-    var mRes = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbH()});
+    var mRes = await fetch(SB_URL + '/rest/v1/metrics?select=*&order=id.desc&limit=1', { headers: sbH() });
     var mData = await mRes.json();
     var m = mData.length > 0 ? mData[0] : {};
-    var sRes = await fetch(SB_URL+'/rest/v1/signups?select=id', {headers:sbH()});
+    var sRes = await fetch(SB_URL + '/rest/v1/signups?select=id', { headers: sbH() });
     var sData = await sRes.json();
-    var salRes = await fetch(SB_URL+'/rest/v1/sales?select=price,artist_amount,spp_amount', {headers:sbH()});
+    var salRes = await fetch(SB_URL + '/rest/v1/sales?select=price,artist_amount,spp_amount', { headers: sbH() });
     var salData = await salRes.json();
-    var aRes = await fetch(SB_URL+'/rest/v1/artists?select=id', {headers:sbH()});
+    var aRes = await fetch(SB_URL + '/rest/v1/artists?select=id', { headers: sbH() });
     var aData = await aRes.json();
+    var memRes = await fetch(SB_URL + '/rest/v1/memberships?select=id', { headers: sbH() });
+    var memData = await memRes.json();
+    var posRes = await fetch(SB_URL + '/rest/v1/posters?select=id', { headers: sbH() });
+    var posData = await posRes.json();
     var liveSignups = Array.isArray(sData) ? sData.length : 0;
     var liveSales = Array.isArray(salData) ? salData.length : 0;
-    var liveRev = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.price||0);},0) : 0;
-    var liveSPP = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.spp_amount||0);},0) : 0;
-    var liveArt = Array.isArray(salData) ? salData.reduce(function(s,r){return s+parseFloat(r.artist_amount||0);},0) : 0;
+    var liveRev = Array.isArray(salData) ? salData.reduce(function(s, r) { return s + parseFloat(r.price || 0); }, 0) : 0;
+    var liveSPP = Array.isArray(salData) ? salData.reduce(function(s, r) { return s + parseFloat(r.spp_amount || 0); }, 0) : 0;
+    var liveArt = Array.isArray(salData) ? salData.reduce(function(s, r) { return s + parseFloat(r.artist_amount || 0); }, 0) : 0;
     var liveInt = Array.isArray(aData) ? aData.length : 0;
-    document.getElementById('m-signups').textContent = parseInt(m.total_signups||0) + liveSignups;
-    document.getElementById('m-sales').textContent = parseInt(m.total_sales||0) + liveSales;
-    document.getElementById('m-revenue').textContent = '$'+(parseFloat(m.total_revenue||0)+liveRev).toFixed(2);
-    document.getElementById('m-spp').textContent = '$'+(parseFloat(m.total_spp||0)+liveSPP).toFixed(2);
-    document.getElementById('m-artists-amt').textContent = '$'+(parseFloat(m.total_artist_amount||0)+liveArt).toFixed(2);
-    document.getElementById('m-interest').textContent = parseInt(m.total_artist_interest||0) + liveInt;
-    // Membership count
-    var memRes = await fetch(SB_URL+'/rest/v1/memberships?select=id', {headers:sbH()});
-    var memData = await memRes.json();
-    document.getElementById('m-members').textContent = Array.isArray(memData) ? memData.length : 0;
+    var liveMem = Array.isArray(memData) ? memData.length : 0;
+    var livePos = Array.isArray(posData) ? posData.length : 0;
+    document.getElementById('m-signups').textContent = parseInt(m.total_signups || 0) + liveSignups;
+    document.getElementById('m-sales').textContent = parseInt(m.total_sales || 0) + liveSales;
+    document.getElementById('m-revenue').textContent = '$' + (parseFloat(m.total_revenue || 0) + liveRev).toFixed(2);
+    document.getElementById('m-spp').textContent = '$' + (parseFloat(m.total_spp || 0) + liveSPP).toFixed(2);
+    document.getElementById('m-artists-amt').textContent = '$' + (parseFloat(m.total_artist_amount || 0) + liveArt).toFixed(2);
+    document.getElementById('m-interest').textContent = parseInt(m.total_artist_interest || 0) + liveInt;
+    document.getElementById('m-members').textContent = liveMem;
+    document.getElementById('m-posters').textContent = livePos;
   } catch(e) { console.error(e); }
 }
 
 async function saveMetricsSnapshot(type, data) {
-  var res = await fetch(SB_URL+'/rest/v1/metrics?select=*&order=id.desc&limit=1', {headers:sbH()});
+  var res = await fetch(SB_URL + '/rest/v1/metrics?select=*&order=id.desc&limit=1', { headers: sbH() });
   var existing = await res.json();
-  var m = existing.length > 0 ? Object.assign({},existing[0]) : {total_sales:0,total_revenue:0,total_spp:0,total_artist_amount:0,total_signups:0,total_artist_interest:0};
+  var m = existing.length > 0 ? Object.assign({}, existing[0]) : { total_sales: 0, total_revenue: 0, total_spp: 0, total_artist_amount: 0, total_signups: 0, total_artist_interest: 0 };
   delete m.id; delete m.created_at;
-  if (type==='sales') { m.total_sales=(parseFloat(m.total_sales)||0)+data.count; m.total_revenue=(parseFloat(m.total_revenue)||0)+data.revenue; m.total_spp=(parseFloat(m.total_spp)||0)+data.spp; m.total_artist_amount=(parseFloat(m.total_artist_amount)||0)+data.artist; }
-  if (type==='signups') { m.total_signups=(parseInt(m.total_signups)||0)+data.count; }
-  await fetch(SB_URL+'/rest/v1/metrics', { method:'POST', headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}), body:JSON.stringify(m) });
+  if (type === 'sales') { m.total_sales = (parseFloat(m.total_sales) || 0) + data.count; m.total_revenue = (parseFloat(m.total_revenue) || 0) + data.revenue; m.total_spp = (parseFloat(m.total_spp) || 0) + data.spp; m.total_artist_amount = (parseFloat(m.total_artist_amount) || 0) + data.artist; }
+  if (type === 'signups') { m.total_signups = (parseInt(m.total_signups) || 0) + data.count; }
+  await fetch(SB_URL + '/rest/v1/metrics', { method: 'POST', headers: Object.assign({}, sbH(), { 'Prefer': 'resolution=merge-duplicates' }), body: JSON.stringify(m) });
 }
 
-// -- POSTERS --
-async function loadPosters() {
-  try {
-    var res = await fetch(SB_URL+'/rest/v1/posters?select=*&order=created_at.desc', {headers:sbH()});
-    var data = await res.json();
-    if (!Array.isArray(data)) return;
-    var now = new Date();
-    var month = data.filter(function(r){var d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-    document.getElementById('poster-total').textContent = data.length;
-    document.getElementById('poster-month').textContent = month.length;
-    var tbody=document.getElementById('poster-tbody'), empty=document.getElementById('poster-empty');
-    if(data.length===0){tbody.innerHTML='';empty.style.display='block';return;}
-    empty.style.display='none';
-    tbody.innerHTML=data.map(function(r){
-      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      return '<tr><td class="date-cell">'+d+'</td><td>'+esc(r.name||'')+'</td><td>'+esc(r.email||'')+'</td><td>'+esc(r.location||'-')+'</td><td>'+(r.social?'<a href="'+esc(r.social)+'" target="_blank" style="color:var(--moss)">link</a>':'-')+'</td><td>'+(r.membership?'Yes':'-')+'</td></tr>';
-    }).join('');
-  } catch(e){console.error(e);}
-}
-
-function exportPostersCSV() {
-  fetch(SB_URL+"/rest/v1/posters?select=*&order=created_at.desc",{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
-    var rows = data.map(function(r){
-      var d=new Date(r.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
-      return [d,r.name,r.email,r.location,r.social||"",r.membership?"Yes":"No"].map(function(v){return '"'+String(v||"").replace(/"/g,'""')+'"';}).join(",");
-    });
-    downloadCSV("Date,Name,Email,Location,Social,Member\n"+rows.join("\n"),"SeaPonyPress_PosterPickups_"+today()+".csv");
-  });
-}
-
-// -- UTILS --
-function downloadCSV(content, filename) { var blob=new Blob([content],{type:'text/csv'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
+// UTILS
+function downloadCSV(content, filename) { var blob = new Blob([content], { type: 'text/csv' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
 function today() { return new Date().toISOString().split('T')[0]; }
 </script>
 </body>
