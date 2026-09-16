@@ -260,8 +260,8 @@ function doLogin() {
   if (pw === PASS) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    loadSignups().then(function(){});
-    renderArtistList().then(function(){});
+    try { loadSignups().then(function(){}); } catch(e) { console.error(e); }
+    try { renderArtistList().then(function(){}); } catch(e) { console.error(e); }
   } else {
     document.getElementById('login-error').style.display = 'block';
   }
@@ -597,14 +597,12 @@ async function loadPosters() {
 }
 
 function exportPostersCSV() {
-  fetch(SB_URL+'/rest/v1/posters?select=*&order=created_at.desc',{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
+  fetch(SB_URL+"/rest/v1/posters?select=*&order=created_at.desc",{headers:sbH()}).then(function(r){return r.json();}).then(function(data){
     var rows = data.map(function(r){
-      var d=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      return [d,r.name,r.email,r.location,r.social||'',r.membership?'Yes':'No'].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(',');
+      var d=new Date(r.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+      return [d,r.name,r.email,r.location,r.social||"",r.membership?"Yes":"No"].map(function(v){return '"'+String(v||"").replace(/"/g,'""')+'"';}).join(",");
     });
-    downloadCSV('Date,Name,Email,Location,Social,Member
-'+rows.join('
-'),'SeaPonyPress_PosterPickups_'+today()+'.csv');
+    downloadCSV("Date,Name,Email,Location,Social,Member\n"+rows.join("\n"),"SeaPonyPress_PosterPickups_"+today()+".csv");
   });
 }
 
