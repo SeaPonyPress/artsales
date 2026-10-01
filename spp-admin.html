@@ -96,6 +96,7 @@
     <button class="tab" onclick="switchTab('interested',this)">Artist Interest</button>
     <button class="tab" onclick="switchTab('artists',this)">Manage Artists</button>
     <button class="tab" onclick="switchTab('metrics',this)">All-Time Metrics</button>
+    <button class="tab" onclick="switchTab('advocacy',this)">Advocacy</button>
   </div>
 
   <!-- SIGNUPS -->
@@ -203,6 +204,7 @@
           <button class="btn secondary" onclick="exportPostersCSV()">Export CSV</button>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -244,6 +246,46 @@
       </div>
     </div>
   </div>
+  <!-- ADVOCACY -->
+  <div class="tab-content" id="tab-advocacy">
+    <div class="admin-main">
+      <div class="section-card">
+        <h2>Tongass Comment Drive</h2>
+        <p>Entries from the Defend Public Lands giveaway. Confirm comment in the Federal Register before notifying winners.</p>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="adv-total">0</div><div class="stat-label">Total entries</div></div>
+        <div class="stat-card"><div class="stat-num" id="adv-month">0</div><div class="stat-label">This month</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Mailing Address</th></tr></thead>
+          <tbody id="adv-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="adv-empty" style="display:none"><strong>No entries yet</strong></div>
+      </div>
+      <div class="export-row" style="margin-top:1rem">
+        <button class="btn secondary" onclick="exportAdvocacyCSV()">Export CSV</button>
+        <button class="btn" onclick="pickWinners()">Pick a Winner</button>
+      </div>
+      <div id="winners-display" style="display:none;margin-top:1.25rem;background:rgba(45,110,62,0.08);border:1px solid rgba(45,110,62,0.25);border-radius:8px;padding:1.25rem">
+        <div style="font-family:'Oswald',sans-serif;font-size:1rem;color:var(--moss);margin-bottom:0.5rem">Random Winner</div>
+        <div style="font-size:0.82rem;color:var(--fog);margin-bottom:1rem">Each pick is random and independent. Confirm comment before notifying.</div>
+        <div id="winner-result" style="background:white;border:1px solid rgba(45,74,42,0.2);border-radius:6px;padding:1rem;margin-bottom:1rem">
+          <div style="font-size:0.75rem;color:var(--fog);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem">Selected</div>
+          <div id="winner-name" style="font-size:1.1rem;color:var(--ink);font-weight:600;margin-bottom:0.2rem"></div>
+          <div id="winner-email" style="font-size:0.88rem;color:var(--fog)"></div>
+          <div id="winner-address" style="font-size:0.82rem;color:var(--fog);margin-top:0.2rem"></div>
+        </div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="btn" onclick="pickWinners()">Pick another winner</button>
+          <button class="btn secondary" onclick="document.getElementById('winners-display').style.display='none'">Close</button>
+        </div>
+        <div id="picked-list" style="margin-top:1rem;font-size:0.8rem;color:var(--fog)"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -283,6 +325,7 @@ function switchTab(tab, btn) {
   if (tab === 'artists') renderArtistList();
   if (tab === 'interested') { loadInterested(); loadPosters(); }
   if (tab === 'metrics') loadMetrics();
+  if (tab === 'advocacy') loadAdvocacy();
 }
 
 function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -608,6 +651,68 @@ async function saveMetricsSnapshot(type, data) {
   if (type === 'sales') { m.total_sales = (parseFloat(m.total_sales) || 0) + data.count; m.total_revenue = (parseFloat(m.total_revenue) || 0) + data.revenue; m.total_spp = (parseFloat(m.total_spp) || 0) + data.spp; m.total_artist_amount = (parseFloat(m.total_artist_amount) || 0) + data.artist; }
   if (type === 'signups') { m.total_signups = (parseInt(m.total_signups) || 0) + data.count; }
   await fetch(SB_URL + '/rest/v1/metrics', { method: 'POST', headers: Object.assign({}, sbH(), { 'Prefer': 'resolution=merge-duplicates' }), body: JSON.stringify(m) });
+}
+
+// ADVOCACY
+async function loadAdvocacy() {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/advocacy?select=*&order=created_at.desc', { headers: sbH() });
+    var data = await res.json();
+    if (!Array.isArray(data)) return;
+    var now = new Date();
+    var month = data.filter(function(r) { var d = new Date(r.created_at); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+    document.getElementById('adv-total').textContent = data.length;
+    document.getElementById('adv-month').textContent = month.length;
+    var tbody = document.getElementById('adv-tbody'), empty = document.getElementById('adv-empty');
+    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map(function(r) {
+      return '<tr><td class="date-cell">' + fmt(r.created_at) + '</td><td>' + esc(r.name || '') + '</td><td>' + esc(r.email || '') + '</td><td>' + esc(r.address || '-') + '</td><td>' + (r.newsletter ? 'Yes' : '-') + '</td></tr>';
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function exportAdvocacyCSV() {
+  fetch(SB_URL + '/rest/v1/advocacy?select=*&order=created_at.desc', { headers: sbH() }).then(function(r) { return r.json(); }).then(function(data) {
+    var lines = data.map(function(r) { return [fmt(r.created_at), r.name, r.email, r.address, r.newsletter ? 'Yes' : 'No'].map(function(v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(','); });
+    downloadCSV('Date,Name,Email,Address,Newsletter\n' + lines.join('\n'), 'SeaPonyPress_TongassComments_' + today() + '.csv');
+  });
+}
+
+// PICK WINNERS
+var pickedWinners = [];
+
+async function pickWinners() {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/advocacy?select=*', { headers: sbH() });
+    var data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) { alert('No entries yet!'); return; }
+
+    // Filter out already picked this session
+    var pool = data.filter(function(r) {
+      return !pickedWinners.find(function(p) { return p.id === r.id; });
+    });
+
+    if (pool.length === 0) { alert('All entries have been picked this session! Refresh to start over.'); return; }
+
+    // Pick one random winner
+    var idx = Math.floor(Math.random() * pool.length);
+    var winner = pool[idx];
+    pickedWinners.push(winner);
+
+    document.getElementById('winner-name').textContent = winner.name;
+    document.getElementById('winner-email').textContent = winner.email;
+    document.getElementById('winner-address').textContent = winner.address || '';
+    document.getElementById('winners-display').style.display = 'block';
+
+    // Show list of all picked this session
+    if (pickedWinners.length > 1) {
+      document.getElementById('picked-list').innerHTML = '<strong>Picked this session (' + pickedWinners.length + '):</strong><br>' +
+        pickedWinners.map(function(w, i) { return (i+1) + '. ' + esc(w.name) + ' — ' + esc(w.email); }).join('<br>');
+    } else {
+      document.getElementById('picked-list').innerHTML = '';
+    }
+  } catch(e) { alert('Error loading entries: ' + e.message); }
 }
 
 // UTILS
